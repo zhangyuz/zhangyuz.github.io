@@ -1,6 +1,10 @@
 ---
-Title: TensorFlow基本使用
-Date: 2016 12-25 15:01
+title: TensorFlow基本使用
+date: 2016 12-25 15:01
+categories:
+    - TensorFlow
+tags:
+    - TensorFlow
 
 ---
 

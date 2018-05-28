@@ -1,7 +1,10 @@
 ---
-Title: Pelican Support LaTex How To
-Date: 2017-01-02 10:35
-Slug: Pelican Support LaTex How To
+title: Pelican Support LaTex How To
+date: 2017-01-02 10:35
+categories: 
+    - Pelican
+tags:
+    - Pelican
 
 ---
 

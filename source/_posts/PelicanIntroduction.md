@@ -1,6 +1,10 @@
 ---
-Title: Pelican 入门
-Date: 2016-12-18 11:58
+title: Pelican 入门
+date: 2016-12-18 11:58
+categories: 
+    - Pelican
+tags: 
+    - Pelican
 
 ---
 

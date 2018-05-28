@@ -1,9 +1,12 @@
 ---
-Title: 逻辑回归
-Date: 2016-12-31 19:48
-Tags: MachineLearning,机器学习,LogisticRegression,逻辑回归
-Slug: LogisticRegression
-Summary: 吴恩达机器学习笔记
+title: 逻辑回归
+date: 2016-12-31 19:48
+tags: 
+    - MachineLearning
+    - 机器学习
+    - LogisticRegression
+    - 逻辑回归
+categories: MachineLearning
 
 ---
 

@@ -1,6 +1,11 @@
 ---
-Title: Git Submodules 学习笔记
-Date: 2016-12-24 13:40
+title: Git Submodules 学习笔记
+date: 2016-12-24 13:40
+tag: 
+    - git
+    - submodule
+categories: 
+    - git
 
 ---
 # Git Submodules
