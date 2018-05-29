@@ -2,7 +2,7 @@
 title: Variables:Creation, Initialization, Saving, and Loading
 date: 2017-01-15 12:12
 categories: TensorFlow
-tags: TensorFLow
+tags: TensorFlow
 
 ---
 
