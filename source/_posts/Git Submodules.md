@@ -5,7 +5,7 @@ tag:
     - git
     - submodule
 categories: 
-    - git
+    - Git
 
 ---
 # Git Submodules

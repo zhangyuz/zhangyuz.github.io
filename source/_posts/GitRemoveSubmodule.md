@@ -2,7 +2,7 @@
 title: Git 删除 Submodule
 date: 2017-01-12 23:03
 categories: 
-    - git
+    - Git
 
 ---
 
