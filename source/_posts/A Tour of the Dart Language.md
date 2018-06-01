@@ -1,3 +1,11 @@
+---
+title: A Tour of the Dart Language
+date: 2018-06-01 14:15
+categories: Dart
+tags: Dart
+
+---
+
 # A Tour of the Dart Language
 
 > 原文见：[A Tour of the Dart Language](https://www.dartlang.org/guides/language/language-tour)
