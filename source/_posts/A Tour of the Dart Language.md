@@ -1,8 +1,12 @@
 ---
 title: A Tour of the Dart Language
 date: 2018-06-01 14:15
-categories: Dart
-tags: Dart
+updated: 2018-12-08 19:30
+categories: 
+- Dart
+tags:
+- Dart
+- Flutter
 
 ---
 
@@ -41,7 +45,7 @@ main() {
 
 ` int`
 
-一种数据类型，其他[内置数据类型](https://www.dartlang.org/guides/language/language-tour#built-in-types)还有` String`，`List`和`boll`。
+一种数据类型，其他[内置数据类型](https://www.dartlang.org/guides/language/language-tour#built-in-types)还有` String`，`List`和`bool`。
 
 `print()`
 
@@ -162,7 +166,7 @@ const bar = 10000000; // 压力单元(dynes/cm2)
 const double atm - 1.01325 * bar; //标准气压
 ```
 
-`const` 关键字不仅仅能射你妈那个常量，你还可以用来创建常量值，也可以用来声明构造函数。任何变量都可以包含一个常量值。
+`const` 关键字不仅仅能声明常量，你还可以用来创建常量值，也可以用来声明构造函数。任何变量都可以包含一个常量值。
 
 ```dart
 // 注意: []创建空列表
@@ -225,7 +229,7 @@ double y = 1.1;
 double exponents = 1.42e5;
 ```
 
-下面的雷子展示了如何在数字与字符串之间数据类型转换：
+下面的例子展示了如何在数字与字符串之间数据类型转换：
 
 ```dart
 // String -> int
@@ -263,7 +267,7 @@ const msUntilRetry = secondsUtilRetry * secondsUtilRetry;
 
 ### Strings
 
-Dart 语音中的字符串就是 UTF-16 编码的序列。可以使用单引号或双引号创建字符串：
+Dart 语言中的字符串就是 UTF-16 编码的序列。可以使用单引号或双引号创建字符串：
 
 ```dart
 var s1 = 'Single quotes work well for string literals.';
@@ -325,7 +329,7 @@ Literal strings are compile-time constants, as long as any interpolated expressi
 // Theses work in a const string.
 const aConstNum = 0;
 const aConstBool = true;
-const aConstStrng - 'a constant string';
+const aConstStrng = 'a constant string';
 
 // These do NOT work in a const string
 var aNum = 0;
@@ -517,7 +521,7 @@ Symbol 的字面标识是编译时常量。
 
 ## Functions
 
-Dart 是真正面下对象的语言，所以即使函数也是对象，并且属于 [Function](https://api.dartlang.org/dev/dart-core/Function-class.html) 类型。这意味着函数可以用来赋值给变量或者作为参数传递给其他函数。对于函数类的对象，你可以直接调用这个对象，详细信息参考[Callable classes](https://www.dartlang.org/guides/language/language-tour#callable-classes) 。
+Dart 是真正面向对象的语言，所以即使函数也是对象，并且属于 [Function](https://api.dartlang.org/dev/dart-core/Function-class.html) 类型。这意味着函数可以用来赋值给变量或者作为参数传递给其他函数。对于函数类的对象，你可以直接调用这个对象，详细信息参考[Callable classes](https://www.dartlang.org/guides/language/language-tour#callable-classes) 。
 
 函数：
 
@@ -670,4 +674,90 @@ void main(List<String> arguments) {
 
 #### Functions as first-class objects
 
-To be Continued......
+函数可以作为参数传递给另一个函数，比如：
+
+```dart
+void printElement(int element) {
+    print(element);
+}
+
+var list = [1, 2, 3];
+
+// 将 printElement 作为参数传递
+list.forEach(printElement);
+```
+
+函数可以作为值分配给变量：
+
+```dart
+var louldify = (msg) => '!!! ${msg}.toUpperCase() !!!';
+louldify('hello')
+```
+
+#### Anonymous functions 匿名函数
+
+匿名函数也可以称为 *lambda* 或 *closure*。定义如下：
+
+```
+([[Type] param1[, …]]) { 
+  codeBlock; 
+}; 
+```
+
+与普通函数定义相似，0个或多个参数，可选的参数累心。如果函数只有一个语句，可以简写成 `([[Type] param1[, …]]) => oneLineCodeBlock;  ` 。
+
+#### Lexical Scope 词法范围
+
+Dart 语言变量的作用域是静态确定的，简单的说就是由你的代码结构决定的。花括号表示变量的作用域。
+
+```dart
+bool topLevel = true;
+
+void main() {
+  var insideMain = true;
+
+  void myFunction() {
+    var insideFunction = true;
+
+    void nestedFunction() {
+      var insideNestedFunction = true;
+
+      assert(topLevel);
+      assert(insideMain);
+      assert(insideFunction);
+      assert(insideNestedFunction);
+    }
+  }
+}
+```
+
+> 注意：最内层嵌套的函数可以访问外层的所有变量。
+
+#### Lexical Closure
+
+闭包可以访问他的词法范围内的变量，即使闭包在他原始访问范围外访问也可以。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
