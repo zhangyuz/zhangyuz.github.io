@@ -2,7 +2,7 @@
 title: A Tour of the Dart Language
 date: 2018-06-01 14:15
 updated: 2018-12-08 19:30
-categories: 
+categories:
 - Dart
 tags:
 - Dart
@@ -10,11 +10,7 @@ tags:
 
 ---
 
-# A Tour of the Dart Language
-
 > 原文见：[A Tour of the Dart Language](https://www.dartlang.org/guides/language/language-tour)
-
-[TOC]
 
 本文将为你展示Dart语言的主要特性，包括从变量、操作符到类、库等一系列内容。本文默认你已经有了其他编程语言基础。
 
@@ -736,6 +732,488 @@ void main() {
 #### Lexical Closure
 
 闭包可以访问他的词法范围内的变量，即使闭包在他原始访问范围外访问也可以。
+
+#### Test functions for equality 函数比较
+
+```dart
+void foo() {}  // 顶层函数
+class A {
+    static void bar() {}    // 类静态函数
+    void baz() {}           // 实例函数
+}
+
+void main() {
+    // 顶层函数比较
+    var x = foo;
+    // 同一个顶层函数，相等
+    assert(x == foo);
+    // 静态函数比较
+    // 同一个静态函数，相等
+    x = A.bar;
+    assert(x == A.bar);
+
+    // 实例函数比较
+    var v = A();
+    var w = A();
+    var y = w;
+    x = w.baz;
+
+    // 都是实例w的函数，所以相等
+    assert(y.bzd == x)
+    // 非同一个实例的函数，不相等
+    assert(v.baz != w.baz)
+}
+```
+
+#### Return values 返回值
+
+所有的函数都是返回值，如果代码不指定返回值，默认的 `return null;` 会被增加到函数的结尾。
+
+```dart
+foo() {}
+assert(foo() == null);
+```
+
+## Operators 操作符
+
+Dart 的多数运算符都可以[覆写](https://www.dartlang.org/guides/language/language-tour#overridable-operators)。
+
+|描述|运算符|
+|--------------------|:----------------------------|
+|后缀一元运算符|`expr++ expr-- () [] . ?.`|
+|前缀一元运算符|`-expr !expr ~expr ++expr --expr`|
+|乘法|`* / % ~/`|
+|加法|`+ -`|
+|移位操作|`<< >>`|
+|按位与|`&`|
+|按位异或|`^`|
+|按位或|`|`|
+|关系与类型比较|`> >= <= < as is is!`|
+|相等性比较|`== ！=`|
+|逻辑与|`&&`|
+|逻辑或|`||`|
+|if null|`??`|
+|条件运算符|`expr1?expr2:expr3`|
+|cascade级联操作|`..`|
+|赋值|`=  *=  /=  ~/=  %=  +=  -=  <<=  >>=  &=  ^=`|
+|||
+
+> 表中上方操作符的优先级都高于下方操作符的优先级。如果运算符适用于两侧不同类型的数据，那么使用左侧数据类型的方式进行运算。
+
+### Arithmetic operators 算数运算符
+
+| 运算符  | 意义                               |
+| ------- | ---------------------------------- |
+| `+`     | 加法                               |
+| `-`     | 减法                               |
+| `-expr` | 负数                               |
+| `*`     | 乘法                               |
+| `/`     | 除法                               |
+| `~/`    | 除法，去整数结果                   |
+| `%`     | 取模                               |
+| `++var` | var = var +1, 表达式的值是var+1    |
+| `var++` | var = var + 1，表达式的值是var     |
+| `--var` | var = var - 1，表达式的值是var - 1 |
+| `var--` | var = var - 1, 表达式的值是var     |
+
+### Equality and relational operators 相等与关系运算符
+
+| 运算符 | 意义                                                         |
+| ------ | ------------------------------------------------------------ |
+| `==`   | 用来判断两个对象是否表示同一个事物（如果操作符两边的对象都是null，返回true，其中一个是null，返回false；如果都不是null，调用x.==(y)） |
+| `!=`   | 不相等                                                       |
+| `>`    | 大于                                                         |
+| `<`    | 小于                                                         |
+| `>=`   | 大于等于                                                     |
+| `<=`   | 小于等于                                                     |
+
+> 如果判断x、y是否是同一个对象，使用 `identical()` 函数。
+
+
+
+### Type test operators 类型检测运算符
+
+`as`、 `is`、 `is!` 用来在运行时检查对象类型。
+
+| 运算符 | 意义                                            |
+| ------ | ----------------------------------------------- |
+| `as`   | 类型转换（`(emp as Person).firstName = 'Bob'`） |
+| `as`   | True 如果对象是指定类型                         |
+| `is!`  | False如果对象是指定类型                         |
+
+### Assignment operators 赋值运算符
+
+> `??=` 是一特殊的赋值符号，只有当被赋值的变量为null的时候 才会赋值。
+
+### Logical operators
+
+| 运算符  | 意义     |
+| ------- | -------- |
+| `!expr` | 非，取反 |
+| `||`    | 逻辑或   |
+| `&&`    | 逻辑与   |
+
+### Bitwise and shift operators 位与移位操作符
+
+| 运算符  | 意义              |
+| ------- | ----------------- |
+| `&`     | 按位与            |
+| `|`     | 按位或            |
+| `^`     | 按位异或          |
+| `~expr` | 按位取反          |
+| `<<`    | 左移，右边用0补充 |
+| `>>`    | 右移，左边用0补充 |
+
+### Conditional Expressions 条件表达式
+
+`condition ? expr1 : expr2`： 如果 condition 为 Ture，返回 expr1，否则返回 expr2。
+
+```dart
+var visibility = isPublic ? 'public': private;
+```
+
+`expr1 ?? expr2`： 如果 expr1 非null，返回 expr1，否则返回 expr2 。
+
+```dart
+String playerName(String name) => name ?? 'Guest';
+```
+
+### Cascade notation (级联操作)
+
+`..` 级联操作符允许开发者对同一个对象进项一系列操作，不仅仅可以调用对象的函数，还可以直接访问对象的数据成员。
+
+```dart
+final addressBook = (AddressBookBuilder()
+      ..name = 'jenny'
+      ..email = 'jenny@example.com'
+      ..phone = (PhoneNumberBuilder()
+            ..number = '415-555-0100'
+            ..label = 'home')
+          .build())
+    .build();
+```
+
+### Other Operators 其他运算符
+
+| 运算符 | 名字         | 意义                                    |
+| ------ | ------------ | --------------------------------------- |
+| `()`   | 函数调用     | 表示一个函数调用                        |
+| `[]`   | 列表访问     | 列表中指定下标的元素的值                |
+| `.`    | 成员访问     | 访问表达试的属性                        |
+| `?.`   | 条件成员访问 | 与 `.` 类似，当时左边的表达式可以为null |
+
+## Control flow statements 控制流语句
+
+### If and else
+
+略。
+
+### For loops For 循环
+
+```dart
+for(var i = 0; i < 5; i++) {}
+```
+
+对于 `Iterable` 类型的对象，可以使用 `forEach()` 函数遍历。
+
+```dart
+condidates.forEach((candidate) => candidate.interview())
+```
+
+Iterable 类也支持 `for-in` 循环。
+
+```dart
+var collection = [1,2,3];
+for (var x in collection) {
+    print(x);
+}
+```
+### While and do-while while 循环
+`while `循环在循环开始前评估循环的条件。
+`do-while` 循环在一次循环结束后评估循环的条件。
+
+### Break and continue 语句
+使用 `break` 来停止循环，使用 `continue` 来跳过循环之后的语句，继续下一个循环。
+```
+candidates
+    .where((c) => c.yearsExperience >= 5)
+        .forEach((c) => c.interview());
+```
+
+### Switch and case 语句
+Dart 中的 switch 语句可以应用于整数、字符创、或对象编译时常量（使用 == 来比较，类不能覆写 == 函数）。每个非空的 case 语句都必须包含 break 结尾，或者用contine、return、throw 来结束case，否则编译报错。
+对于空 case，执行其下边的case代码（译注：类似java）。
+```dart
+var command = 'CLOSED';
+switch (command) {
+  case 'CLOSED':
+      executeClosed();
+      continue nowClosed;
+        // Continues executing at the nowClosed label.
+
+  nowClosed:
+  case 'NOW_CLOSED':
+    // Runs for both CLOSED and NOW_CLOSED.
+    executeNowClosed();
+    break;
+  }
+```
+### Assert 断言
+使用 `assert(condition)` 来中断正常执行的代码流程，在 `condition` 为 False 的时候中断正常流程，抛出 `AssertionError` 异常。
+> assert 语句在生产代码中是无效的,在 dart 和 dart2js 命令中增加 `--enable-asserts` 来启用 assert 。
+
+## Exceptions 异常
+Dart 可以抛出和捕获异常，如果异常不被捕获，抛出异常的代码会被暂停，通常它所在的进程会被终止。
+与 Java 不同，Dart 不要求函数声明抛出异常，也不要求调用者捕获函数可能抛出的异常。Dart 提供了 `Exception` 和 `Error` 两种异常类型，同时也支持抛出任意非null对象作为异常。
+
+### Throw
+```dart
+throw FormatException('Expected at least 1 section');
+throw 'Out of llamas';
+void distanceTo(Point other) => throw UnimplementedError();
+
+```
+> 通常代码都将 `Exception` 或  `Error` 的子类作为异常抛出。
+
+### Catch
+捕获异常可以阻止异常继续传播，给开发者一个处理异常的机会。
+```dart
+try {
+  breeMoreLlamas();
+} on OutOfLlamasException{
+  buyMoreLlamas();
+} on Exception catch(e) {
+  print('Exception details:\n$e');
+} catch(e, s) {
+  print('Exception details:\n$e');
+  print('StackTrace:\n$s');
+  // 抛出异常给调用者
+  rethrow;
+}
+```
+
+### Finally
+保证无论是否抛出异常，`finally` 中的代码的代码都会执行。
+```dart
+try {
+  breedMoreLlamas();
+} catch (e) {
+  print('Error: $e'); // Handle the exception first.
+} finally {
+  cleanLlamaStalls(); // Then clean up.
+}
+```
+## Classes 类
+
+Dart 是面向对象的语言，同时支持混合继承。所有的对象都是某个类的实例，所有的类都继承自 `Object` 。混合继承的意思是虽然每个类都只有一个直接的父类，但是一个类可以在多个继承中使用。
+
+### Using class memebers 使用类成员
+对象包含数据和函数成员，使用 `.` 来访问对象成员，使用 `?.` 来避免对象空指针的问题。
+```dart
+var p = Point(2, 3);
+p.y = 3;
+assert(p.y == 3);
+num distance = p.distanceTo(Point(4, 4));
+p.y? = 4;
+```
+### Using  constructors 构造函数
+构造函数的名称可以是 `ClassName` 也可以是其他函数。
+```dart
+// new 关键字是可选的
+var p1 = new Point(2, 2);
+var p2 = new Point.fromJson({'x': 1, 'y': 2});
+```
+为了创建编译时常量，有些类提供了常量构造函数，在调用构造函数之前增加 `const` 关键字就可以创建编译时常量了。
+
+构造两个相同的编译时常量，编译器只会生成一个实例，两个常量引用这同一个实例。
+```dart
+var a = const ImmutablePoint(1, 1);
+var b = const ImmutablePoint(1, 1);
+var c = ImmutablePoint(1, 1);
+assert(identical(a, b)); // a b 是同一个实例
+assert(!identical(1, c)); // a c不是同一个实例
+```
+
+在同一个 `const` 作用域范围内所有变量都是 `const` 的，不需要挨个指定。
+
+
+### Getting an object's type 获取对象类型
+使用对象的 `runtimeType` 属性在获取运行时获取对象的类型， 它返回一个 `Type` 类型的对象。
+```dart
+print('The type of a is ${a.runtimeType}');
+```
+
+### Instance variables 实例变量
+```dart
+class Point {
+  num x;    // 声明实例变量，默认初始未 null
+  num y;    // 声明y，初始为 null
+  num z = 0; // 声明z，初始为 0
+}
+```
+所有未初始化的数据成员为null。所有非 final 的数据成员会被默认创建 getter/setter函数。
+```dart
+class Point {
+  num x;
+  num y;
+}
+
+void main() {
+  var point = Point();
+  point.x = 4;              // 使用setter函数设置x的值
+  assert(point.x == 4);     // 使用getter函数获取x的值
+  assert(point.y == null);  // 默认值为 null
+}
+```
+### Constructors 构造函数
+默认使用与类型名字相同的函数作为构造函数，Dart 中构造函数是不被继承的，如果子类没有生命构造函数，它只有一个无参的默认构造函数，所有成员都是默认值。
+
+#### Named constructors 命名构造函数
+使用命名的构造函数来实现多个构造函数，使代码更清晰：
+```dart
+class Point {
+  num x, y;
+  Point(this.x, this.y);
+
+  // 命名构造函数
+  Point.origin() {
+    x = 0;
+    y = 0;
+  }
+}
+```
+子类如果想用父类的命名构造函数，也必须实现它。
+
+#### Involing a non-default superclass constructor 调用父类非默认构造函数
+默认子类调用父类非命名无参构造函数。子类也可以在构造函数的开始调用父类的构造函数。如果指定初始化列表，初始化列表会在父类构造函数之前执行，构造函数的执行顺序如下：
+1. 初始化列表
+2. 父类的无参数构造函数
+3. 主类的无参构造函数
+
+如果父类没有无参非命名构造函数，开发者必须手动调用父类的构造函数，使用 `:` 在构造函数体之前指定父类构造函数。
+```dart
+class Person {
+  String firstName;
+
+  Person.fromJson(Map data) {
+    print('in Person');
+  }
+}
+
+class Employee extends Person {
+  // 调用父类指定构造函数
+  Employee.formJson(Map data): super.fromJson(data) {
+    print('in Employee')
+  }
+}
+
+main() {
+  var emp = new Employee.fromJson({});
+  if (emp is Person) {
+    emp.firstName = 'Bob';
+  }
+  (emp as Person).firstName = 'Bob';
+}
+```
+
+#### Initializer list 初始化列表
+可以在初始化列表中初始化成员变量，在运行构造函数前初始化实例初始化成员，使用逗号分隔列表。
+```dart
+Point.fromJson(Map<String, num> json) : x = json['x'], y = json['y'] {
+  print('In Point.fromJson(): ($x, $y)');
+}
+```
+在初始化 `final` 数据成员的时候初始化列表格外有用。
+```dart
+import 'dart:math';
+
+class Point {
+  final num x;
+  final num y;
+  final num distanceFromOrigin;
+
+  Point(x, y) : x = x, y = y, distanceFromOrigin = sqrt(x * x + y * y);
+}
+
+main() {
+  var p = new Point(2, 3);
+  print(p.distanceFromOrigin);
+}
+```
+##### Redirecting constructors 重定向构造函数
+有时某些构造函数的作用就是调用其他构造函数。重定向构造函数的函数体是空的，使用 `:` 分隔。
+```dart
+class Point {
+ num x, y;
+ // the main constructor
+ Point(this.x, this.y);
+
+ Point.alongXAxis(num x): this(x, 0);
+}
+```
+#### Constant constructors 常量构造函数
+使用 `const` 构造函数来创建编译时常量，并且其中所有成员变量都是 `final` 类型的。
+```dart
+class ImmutablePoint {
+  static final ImmutablePoint origin = 
+    const ImmutablePoint(0, 0);
+
+  final num x, y;
+
+  const ImmutablePoint(this.x, this.y);
+}
+```
+> 常量构造函数并非每次都创建常量。
+
+#### Factory constructors 工厂构造函数
+使用 `factory` 关键字来实现工厂构造函数，工厂构造函数不需要每次都创建新的对象，比如它可以从cache中返回一个重用的对象或者返回一个子类的对象。
+```dart
+class Logger {
+ final String name;
+ bool mute = false;
+
+ // 使用 _ 使成员变量编程私有成员
+ static final Map(String, Logger) _cache =
+    <String, Logger>{};
+
+  factory Logger(String name) {
+    if (_cache.containsKey(name)) {
+      return _cache[name];
+    } else {
+      final logger = Logger._internal(name) {
+        _cache[name] = logger;
+        return logger;
+      }
+    }
+  }
+
+  Logger._internal(this.name);
+
+  void log(String msg) {
+    if (!mute) print(msg);
+  }
+}
+```
+> 工厂构造函数没有权限访问 `this` 。
+工厂构造函数的使用与普通构造函数的使用一致。
+```dart
+var logger = Logger('UI');
+logger.log('Button clicked');
+```
+
+### Methonds 函数
+
+#### Instance methods 实例函数
+
+实例函数可以访问类的成员变量和 `this` 。
+
+
+
+
+
+
+
+
 
 
 
