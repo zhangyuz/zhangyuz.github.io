@@ -139,7 +139,7 @@ int lineCount;
 assert(lineCount == null)
 ```
 
-> 在生产代码中，`assert()` 调用会被忽略掉。在开发中，`assert(condition)` 在*condition* 为真时抛出异常。参考 [Assert](https://www.dartlang.org/guides/language/language-tour#assert)。
+> 在生产代码中，`assert()` 调用会被忽略掉。在开发中，`assert(condition)` 在*condition* 为非 `true` 时抛出异常。参考 [Assert](https://www.dartlang.org/guides/language/language-tour#assert)。
 
 ### final 与 const
 
@@ -1207,7 +1207,43 @@ logger.log('Button clicked');
 
 实例函数可以访问类的成员变量和 `this` 。
 
+```dart
+import 'dart:math';
+class Point {
+    num x, y;
+    Point(this.x, this.y);
 
+    num distanceTo(Point other) {
+        var dx = x - other.x;
+        var dy = y - other.y;
+        return sqrt(dx * dx + dy * dy);
+    }
+}
+```
+
+#### Getters and setters
+
+Getter 和 Setter 提供了对类成员读写的方式，你也可以使用 `get` 和 `set` 关键词实现自定义的 `getter` 和 `setter` 。
+```dart
+class Rectangle {
+  num left, top, width, height;
+
+  Rectangle(this.lest, this.top, this.width, this.height);
+
+  num get right => left + width;
+  set right(num value) => left = value - width;
+  num get bottom => top + height;
+  set bottom(num value) => top = value - height;
+}
+
+void main() {
+  var rec = Rectangle(3, 4, 20, 15);
+  assert(rect.left == 3);
+  rect.right = 12;
+  assert(rect.left == -1);
+}
+```
+你可以在初始的时候使用实例变量，如果之后改成函数的实现方式，你就不需要修改客户端的代码而直接使用了。
 
 
 
