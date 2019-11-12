@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Git Submodules 译自原文 ，有部分修改。 子模块 Submodules 在一个项目中使用其他的项目是一种常见的现象。或许是第三方开发的库或你自己为了在多个项目中使用而开发的单独的库。这些情况综合能够最常见的问题就是：你既想把他们作为两个独立的库对待又想在一个项目中使用例外一个。 假设你在开发一个网站，它包含Atom订阅功能。所以你决定使用第三方库而不是自己编写生成Atom订阅的代码。">
+<meta name="keywords" content="git,submodule">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git Submodules 学习笔记">
+<meta property="og:url" content="https:&#x2F;&#x2F;www.zhangyuzheng.com&#x2F;Git&#x2F;Git%20Submodules&#x2F;index.html">
+<meta property="og:site_name" content="memorandums">
+<meta property="og:description" content="Git Submodules 译自原文 ，有部分修改。 子模块 Submodules 在一个项目中使用其他的项目是一种常见的现象。或许是第三方开发的库或你自己为了在多个项目中使用而开发的单独的库。这些情况综合能够最常见的问题就是：你既想把他们作为两个独立的库对待又想在一个项目中使用例外一个。 假设你在开发一个网站，它包含Atom订阅功能。所以你决定使用第三方库而不是自己编写生成Atom订阅的代码。">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-11-12T11:43:30.228Z">
+<meta name="twitter:card" content="summary">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="memorandums" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://www.zhangyuzheng.com/Git/Git Submodules/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Git Submodules 学习笔记 | memorandums</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">memorandums</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">life notes</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.zhangyuzheng.com/Git/Git%20Submodules/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhang Yuzheng">
+      <meta itemprop="description" content="码农日常">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="memorandums">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Git Submodules 学习笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2016-12-24 13:40:00" itemprop="dateCreated datePublished" datetime="2016-12-24T13:40:00+08:00">2016-12-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-11-12 19:43:30" itemprop="dateModified" datetime="2019-11-12T19:43:30+08:00">2019-11-12</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Git/" itemprop="url" rel="index"><span itemprop="name">Git</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/Git/Git%20Submodules/#comments" itemprop="discussionUrl">
+                
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="Git/Git Submodules/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="git-submodules">Git Submodules</h1>
+<p>译自<a href="https://git-scm.com/book/en/v2/Git-Tools-Submodules" target="_blank" rel="noopener">原文</a> ，有部分修改。</p>
+<h2 id="子模块-submodules">子模块 Submodules</h2>
+<p>在一个项目中使用其他的项目是一种常见的现象。或许是第三方开发的库或你自己为了在多个项目中使用而开发的单独的库。这些情况综合能够最常见的问题就是：你既想把他们作为两个独立的库对待又想在一个项目中使用例外一个。</p>
+<p>假设你在开发一个网站，它包含Atom订阅功能。所以你决定使用第三方库而不是自己编写生成Atom订阅的代码。你的做法可能是使用CPAN、Ruby gem的共享库或是复制相应的代码到你的代码树中。直接使用共享库的问题你很难对库进行任何形式的定制，并且部署难度大，因为你要保证每个客户端都包含同样的库。把代码复制到自己的代码树的问题是你对它的任何修改定制都可能在上游代码修改后变得很难合并。</p>
+<p>子模块就是为了解决这个问题。==子模块就是你可以在一个Git仓库的子目录中包含另一个Git仓库==。</p>
+<h2 id="开始使用子模块-starting-with-submodules">开始使用子模块 Starting with Submodules</h2>
+<p>我们简单分析下这个分割为主项目和若干子项目的简单项目。</p>
+<p>首先我们把一个现有的Git仓库作为子模块添加到我们正在工作的项目中。使用 ‘git submodule add’ 命令，把你想要跟踪的仓库的绝对或相对路径作为参数，来添加子模块。本例中，我们添加一个成为 “DbConnector” 的库。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ git submodule add  git@github.com:somename/somerepository.git</span><br><span class="line">Cloning into &apos;somerepository&apos;...</span><br><span class="line">Warning: Permanently added the RSA host key for IP address &apos;192.30.253.113&apos; to the list of known hosts.</span><br><span class="line">remote: Counting objects: 9, done.</span><br><span class="line">remote: Compressing objects: 100% (6/6), done.</span><br><span class="line">remote: Total 9 (delta 0), reused 3 (delta 0), pack-reused 0</span><br><span class="line">Receiving objects: 100% (9/9), done.</span><br><span class="line">Checking connectivity... done.</span><br></pre></td></tr></table></figure> 默认，子模块被添加大与子项目同名的目录中，本例中名字为 “somerepository”。你也可以在名字末尾增加你想保存的子目录的路径。</p>
+<p>这时运行 ‘git status’，你会发现入戏结果： <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ git status</span><br><span class="line">On branch master</span><br><span class="line">Changes to be committed:</span><br><span class="line">  (use &quot;git reset HEAD &lt;file&gt;...&quot; to unstage)</span><br><span class="line"></span><br><span class="line">	new file:   .gitmodules</span><br><span class="line">	new file:   somerepository</span><br></pre></td></tr></table></figure> 你首先会注意到新增的文件 ‘.gitmodules’。这是保存项目地址与本地子目录间映射关系的配置文件： <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[submodule &quot;somerepository&quot;]</span><br><span class="line">    path = somerepository</span><br><span class="line">    url = git@github.com:somename/somerepository.git</span><br></pre></td></tr></table></figure> 如果你有多个子模块，配置文件中会包含多个这样的配置项。值得注意的是这个文件与其他文件比如 ‘.gitignore’ 一样都是进行版本控制的。与项目中其他文件一样都会被 ‘push’ 和 ‘pull’。这样别人使用这个仓库的时候就也知道去哪儿获得子模块了。</p>
+<blockquote>
+<p>由于 ‘.gitmodules’ 中仓库的地址是其他人首先尝试clone/fetch的地址，尽量保证这个地址可以被其他人访问到。比如，如果你push的地址与其他人pull的地址不同，使用那个其他人也可以访问到的地址。你可以使用 <code>git config submodule.somerepository.url PRIVATE_URL</code> 来重写这个地址来供你自己使用。有些时候，使用相对地址非常有用。</p>
+</blockquote>
+<p><code>git status</code> 命令的另外一个输出是项目的目录项。如果对这个目录运行 <code>git diff</code>，你会发现一些有趣的结果： <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ git diff --cached somerepository/</span><br><span class="line">diff --git a/somerepository b/somerepository</span><br><span class="line">new file mode 160000</span><br><span class="line">index 0000000..e4c24a3</span><br><span class="line">--- /dev/null</span><br><span class="line">+++ b/somerepository</span><br><span class="line">@@ -0,0 +1 @@</span><br><span class="line">+Subproject commit e4c24a3fb6a10c451730553402acaa27caf5f682</span><br></pre></td></tr></table></figure> 虽然 somerepository 是一个目录，Git把它作为子模块处理，并且不跟踪它内部的内容。相反Git把它作为一个特殊的 commit 。 如果你想要更好看的 diff 的输出，可以给 <code>git diff</code> 传递 <code>--submodule</code> 参数。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ git diff --cached --submodule</span><br><span class="line">diff --git a/.gitmodules b/.gitmodules</span><br><span class="line">new file mode 100644</span><br><span class="line">index 0000000..8291bcf</span><br><span class="line">--- /dev/null</span><br><span class="line">+++ b/.gitmodules</span><br><span class="line">@@ -0,0 +1,3 @@</span><br><span class="line">+[submodule &quot;somerepository&quot;]</span><br><span class="line">+       path = somerepository</span><br><span class="line">+       url = git@github.com:somename/somerepository.git</span><br><span class="line">Submodule zhangyuz.github.io 0000000...e4c24a3 (new submodule)</span><br></pre></td></tr></table></figure> 提交commit的时候可以看见： <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ git commit -am &apos;Add submodule somerepository&apos;</span><br><span class="line">[master 435c587] Add submodule somerepository</span><br><span class="line"> 2 files changed, 4 insertions(+)</span><br><span class="line"> create mode 100644 .gitmodules</span><br><span class="line"> create mode 160000 somerepository</span><br></pre></td></tr></table></figure> ==注意 somerepository 的 mode 是 <code>160000</code>。这时Git中一种特殊的 mode ，基本意思就是以目录的形式记录commit，而不是记录为子目录或文件。==</p>
+<h2 id="clone包含子模块的项目">Clone包含子模块的项目</h2>
+<ol type="1">
+<li>方式1：
+<ol type="1">
+<li>克隆主项目：<code>git clone path/to/your/main/project</code> 克隆回本地的项目中会包含空的子模块，子模块中是空的。</li>
+<li><code>git submodule init</code> 初始化本地配置。</li>
+<li><code>git submodule update</code> fetch 子模块的所有文件，并且 checkout 合适的 commit。</li>
+</ol></li>
+<li>方式2：
+<ol type="1">
+<li><code>git clone --recursive path/to/your/main/project</code>，它会自动初始化和更新其中的每个子模块。</li>
+</ol></li>
+</ol>
+<h2 id="使用包含子模块的项目">使用包含子模块的项目</h2>
+<p>现在我们已经有了一个包含子模块的项目，我们在与团队成员合作开发主项目和子项目。</p>
+<h3 id="拉取上游修改">拉取上游修改</h3>
+<p>如果你只是一个子模块的消费者（既不对子模块贡献代码），并希望及时获得子模块的最新修改，你可以直接进入子模块的目录运行 <code>git fetch</code> 和 <code>git merge</code> 把上游代码合并到本地即可。 这时回到主项目，运行 <code>git diff</code>，你会发现主项目跟踪了子项目HEAD的commit的变化（有个名字叫submodule的子模块）： <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ git diff</span><br><span class="line">diff --git a/submodule b/submodule</span><br><span class="line">index a1f2285..6910783 160000</span><br><span class="line">--- a/submodule</span><br><span class="line">+++ b/submodule</span><br><span class="line">@@ -1 +1 @@</span><br><span class="line">-Subproject commit a1f228568aafe016a3e06e69f14abf211c124d49</span><br><span class="line">+Subproject commit 6910783df605ced7860d8260dc87622c4904bba7</span><br></pre></td></tr></table></figure> 运行 <code>git diff --submodule</code>， 你可以看见具体子模块变更的commit。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git diff --submodule</span><br><span class="line">Submodule submodule a1f2285..6910783:</span><br><span class="line">  &gt; Update readme</span><br></pre></td></tr></table></figure> 你可以设置 <code>git diff</code> 默认显示子模块的变化 <code>git config --global diff.submodule log</code>。 如果这时 commit 主项目的修改，那么别人更新代码后也会获得这个更新。</p>
+<p><code>git submodule update --remote path/to/submodule</code> ：自动更新子模块。</p>
+<p><code>git config -f .gitmodules submodule.asubmodule.branch stable</code> 设置子模块跟踪的分支。本例中设置 asubmodule 这个子模块默认跟踪 stable 这个分支。 <code>git submodule update --remote</code> 自动更新子模块。</p>
+<p><code>git config status.submodulesummary 1</code> 设置 <code>git status</code> 显示子模块修改的摘要信息。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Zhang Yuzheng</li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://www.zhangyuzheng.com/Git/Git%20Submodules/" title="Git Submodules 学习笔记">https://www.zhangyuzheng.com/Git/Git%20Submodules/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by/4.0/" rel="external nofollow" target="_blank">CC BY 4.0</a> unless stating additionally.</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/git/" rel="tag"># git</a>
+          
+            <a href="/tags/submodule/" rel="tag"># submodule</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Pelican/PelicanIntroduction/" rel="next" title="Pelican 入门">
+                <i class="fa fa-chevron-left"></i> Pelican 入门
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/TensorFlow/Tensorflow%20basic%20usage/" rel="prev" title="TensorFlow基本使用">
+                TensorFlow基本使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Zhang Yuzheng</p>
+              <p class="site-description motion-element" itemprop="description">码农日常</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/%20%7C%7C%20archive">
+                
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#git-submodules"><span class="nav-number">1.</span> <span class="nav-text">Git Submodules</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#子模块-submodules"><span class="nav-number">1.1.</span> <span class="nav-text">子模块 Submodules</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始使用子模块-starting-with-submodules"><span class="nav-number">1.2.</span> <span class="nav-text">开始使用子模块 Starting with Submodules</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#clone包含子模块的项目"><span class="nav-number">1.3.</span> <span class="nav-text">Clone包含子模块的项目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用包含子模块的项目"><span class="nav-number">1.4.</span> <span class="nav-text">使用包含子模块的项目</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#拉取上游修改"><span class="nav-number">1.4.1.</span> <span class="nav-text">拉取上游修改</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhang Yuzheng</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v4.0.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.2"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.2"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+    <script id="dsq-count-scr" src="https://zhangyuzheng-com.disqus.com/count.js" async></script>
+  
+
+  
+    <script type="text/javascript">
+      var disqus_config = function () {
+        this.page.url = 'https://www.zhangyuzheng.com/Git/Git%20Submodules/';
+        this.page.identifier = 'Git/Git Submodules/';
+        this.page.title = 'Git Submodules 学习笔记';
+        };
+      function loadComments () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://zhangyuzheng-com.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      }
+      
+        loadComments();
+      
+    </script>
+  
+
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
