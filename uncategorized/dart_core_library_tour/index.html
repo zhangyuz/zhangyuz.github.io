@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="A tour of the core libraries 原文参见 A tour of the core libraries 。 本文展示了 Dart 核心库的主要特性。本文只是概览，不保证连贯性。档需要了解某个类的更多信息，参考 Dart API reference 。 dart:core 内置类型、集合和其他核心功能。任何 Dart 程序都会自动导入此库。 dart:async 支持异步编程，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="dart_core_library_tour">
+<meta property="og:url" content="https:&#x2F;&#x2F;www.zhangyuzheng.com&#x2F;uncategorized&#x2F;dart_core_library_tour&#x2F;index.html">
+<meta property="og:site_name" content="memorandums">
+<meta property="og:description" content="A tour of the core libraries 原文参见 A tour of the core libraries 。 本文展示了 Dart 核心库的主要特性。本文只是概览，不保证连贯性。档需要了解某个类的更多信息，参考 Dart API reference 。 dart:core 内置类型、集合和其他核心功能。任何 Dart 程序都会自动导入此库。 dart:async 支持异步编程，">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2020-01-07T07:45:27.252Z">
+<meta name="twitter:card" content="summary">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="memorandums" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://www.zhangyuzheng.com/uncategorized/dart_core_library_tour/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>dart_core_library_tour | memorandums</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">memorandums</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">life notes</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.zhangyuzheng.com/uncategorized/dart_core_library_tour/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhang Yuzheng">
+      <meta itemprop="description" content="码农日常">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="memorandums">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">dart_core_library_tour
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-01-06 17:22:55" itemprop="dateCreated datePublished" datetime="2020-01-06T17:22:55+08:00">2020-01-06</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-01-07 15:45:27" itemprop="dateModified" datetime="2020-01-07T15:45:27+08:00">2020-01-07</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/uncategorized/dart_core_library_tour/#comments" itemprop="discussionUrl">
+                
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="uncategorized/dart_core_library_tour/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="a-tour-of-the-core-libraries">A tour of the core libraries</h1>
+<p>原文参见 <a href="https://dart.dev/guides/libraries/library-tour" target="_blank" rel="noopener">A tour of the core libraries</a> 。</p>
+<p>本文展示了 Dart 核心库的主要特性。本文只是概览，不保证连贯性。档需要了解某个类的更多信息，参考 <a href="https://api.dart.dev/stable" target="_blank" rel="noopener">Dart API reference</a> 。</p>
+<p><a href="https://dart.dev/guides/libraries/library-tour#dartcore---numbers-collections-strings-and-more" target="_blank" rel="noopener">dart:core</a></p>
+<p>内置类型、集合和其他核心功能。任何 Dart 程序都会自动导入此库。</p>
+<p><a href="https://dart.dev/guides/libraries/library-tour#dartasync---asynchronous-programming" target="_blank" rel="noopener">dart:async</a></p>
+<p>支持异步编程，包含了 Future 和 Stream 等类。</p>
+<p><a href="https://dart.dev/guides/libraries/library-tour#dartmath---math-and-random" target="_blank" rel="noopener">dart:math</a></p>
+<p>数学运算功能和常量，再加上一个随机数生成器。</p>
+<p><a href="https://dart.dev/guides/libraries/library-tour#dartconvert---decoding-and-encoding-json-utf-8-and-more" target="_blank" rel="noopener">dart:convert</a></p>
+<p>包含了在不同的数据表示之间进行转换的编解码器，包含 JSON 和 UTF-8。</p>
+<p><a href="https://dart.dev/guides/libraries/library-tour#darthtml" target="_blank" rel="noopener">dart:html</a></p>
+<p>DOM 和其他基于浏览器 App 的 API 。</p>
+<p><a href="https://dart.dev/guides/libraries/library-tour#dartio" target="_blank" rel="noopener">dart:io</a></p>
+<p>使用 Dart 虚拟机的 I/O 程序，包含 Flutter、服务器和命令行脚本。</p>
+<p>本文只是概述，只包含了一些 dart:* 的库，不包含第三方库。</p>
+<p><a href="https://pub.dev/" target="_blank" rel="noopener">pub.dev</a> 和 <a href="https://dart.dev/web/libraries" target="_blank" rel="noopener">Dart web developer library guild</a> 包含了更多库的信息。 dart:* 库的 API 文档可以在 <a href="https://api.dart.dev/stable" target="_blank" rel="noopener">Dart API reference</a> , Flutter 的文档见 <a href="https://api.flutter.dev/" target="_blank" rel="noopener">Flutter API reference</a> 。</p>
+<h2 id="dartcore---numbers-collection-strings-and-more">dart:core - numbers, collection, strings, and more</h2>
+<p>dart:core 库体积很小，但是提供了 Dart 关键的内置功能。此库是自动导入每个 Dart 程序的。</p>
+<h3 id="printing-to-the-console">Printing to the console</h3>
+<p>顶层的 <code>print()</code> 方法只有一个参数（任意对象），它把对象的字符串的值（<code>toString()返回的字符串</code>）打印到终端。 <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(anObject);</span><br><span class="line"><span class="built_in">print</span>(<span class="string">'I drink <span class="subst">$tea</span>'</span>);</span><br></pre></td></tr></table></figure> 关于字符串和 <code>toString()</code> 函数，参考 <a href="https://dart.dev/guides/language/language-tour#strings" target="_blank" rel="noopener">Strings</a></p>
+<h3 id="numbers">Numbers</h3>
+<p>dart:core 中定义了 num, int 和 double 类，包含了使用数字类型的一些基本工具。</p>
+<p>你可以调用 int 或 double 的 <code>parse()</code> 方法将字符串类型转换为整数或浮点数： <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">assert</span>(<span class="built_in">int</span>.parse(<span class="string">'42'</span>) == <span class="number">42</span>);</span><br><span class="line"><span class="keyword">assert</span>(<span class="built_in">int</span>.parse(<span class="string">'0x42'</span>) == <span class="number">66</span>);</span><br><span class="line"><span class="keyword">assert</span>(<span class="built_in">double</span>.parse(<span class="string">'0.50'</span>) == <span class="number">0.5</span>);</span><br></pre></td></tr></table></figure> 或者你可以使用 num 的 parse() 方法，它会尽可能的返回整数类型，否则会返回 double 类型： <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">assert</span>(<span class="built_in">num</span>.parse(<span class="string">'42'</span>) <span class="keyword">is</span> <span class="built_in">int</span>);</span><br><span class="line"><span class="keyword">assert</span>(<span class="built_in">num</span>.parse(<span class="string">'0x42'</span> <span class="keyword">is</span> <span class="built_in">int</span>));</span><br><span class="line"><span class="keyword">assert</span>(<span class="built_in">num</span>.parse(<span class="string">'0.50'</span>) <span class="keyword">is</span> <span class="built_in">double</span>);</span><br></pre></td></tr></table></figure> 可以使用 <code>radix</code> 参数指定整数的进制（译注：二进制，十六进制）: <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">assert</span>(<span class="built_in">int</span>.parse(<span class="string">'42'</span>, radix: <span class="number">16</span>) == <span class="number">66</span>);</span><br></pre></td></tr></table></figure> 是用 <code>toString()</code> 方法将整数或浮点数转换成字符串。使用 <a href="https://api.dart.dev/stable/dart-core/num/toStringAsFixed.html" target="_blank" rel="noopener">toStringAsFixed</a> 来指定小数点后数字的位数，使用 <a href="https://api.dart.dev/stable/dart-core/num/toStringAsPrecision.html" target="_blank" rel="noopener">toStringAsPrecision()</a> 来指定科学计数法的有效位数： <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将 int 转换为字符串</span></span><br><span class="line"><span class="keyword">assert</span>(<span class="number">42.</span>toString() == <span class="string">'42'</span>);</span><br><span class="line"><span class="comment">// 将 double 转换为字符串</span></span><br><span class="line"><span class="keyword">assert</span>(<span class="number">123.456</span>.toStringAsFixed(<span class="number">2</span>) == <span class="string">'123.46'</span>);</span><br><span class="line"><span class="comment">// 指定有效位数</span></span><br><span class="line"><span class="keyword">assert</span>(<span class="number">123.456</span>.toStringAsPrecision(<span class="number">2</span>) == <span class="string">'1.2e+2'</span>);</span><br><span class="line"><span class="keyword">assert</span>(<span class="built_in">double</span>.parse(<span class="string">'1.2e+2'</span>) == <span class="number">120.0</span>);</span><br></pre></td></tr></table></figure> 更多信息参考 API 文档， <a href="https://api.dart.dev/stable/dart-core/int-class.html" target="_blank" rel="noopener">int</a>，<a href="https://api.dart.dev/stable/dart-core/double-class.html" target="_blank" rel="noopener">double</a>, <a href="https://api.dart.dev/stable/dart-core/num-class.html" target="_blank" rel="noopener">num</a>, <a href="https://dart.dev/guides/libraries/library-tour#dartmath---math-and-random" target="_blank" rel="noopener">dart:math</a> 。</p>
+<h3 id="strings-and-regular-expressions">Strings and regular expressions</h3>
+<p>Dart 中的字符串就是不可修改的 UTF-16 码值序列。Dart 语言教程中有更多关于 <a href="https://dart.dev/guides/language/language-tour#strings" target="_blank" rel="noopener">strings</a> 的信息。你可以使用正则表达式（RegExp 对象）搜索字符串、做字符串替换。</p>
+<p>String 类定义了 <code>split()</code>, <code>contains()</code>, <code>startsWith()</code>, <code>endsWith()</code> 等方法。 #### Searching inside string 你可以在字符串中查找特定字符、确定是否以某个特定字符式样开始或结束： <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 检查字符串是否包含另一个字符串。</span></span><br><span class="line"><span class="keyword">assert</span>(<span class="string">'Never odd or even'</span>.contains(<span class="string">'odd'</span>));</span><br><span class="line"><span class="comment">// 是否以某一个字符串开始</span></span><br><span class="line"><span class="keyword">assert</span>(<span class="string">'Never odd or even'</span>.startsWith(<span class="string">'Never'</span>));</span><br><span class="line"><span class="comment">// 是否以某个字符串结尾</span></span><br><span class="line"><span class="keyword">assert</span>(<span class="string">'Never odd or even'</span>.endsWith(<span class="string">'odd'</span>));</span><br><span class="line"><span class="comment">// 查找子串的</span></span><br><span class="line"><span class="keyword">assert</span>(<span class="string">'Nevenr odd or even'</span>.indexOf(<span class="string">'odd'</span>) = <span class="number">6</span>);</span><br></pre></td></tr></table></figure> #### Extracting data from a string</p>
+<h2 id="dartasync---asynchronous-programming">dart:async - asynchronous programming</h2>
+<p>异步编程经常使用回调函数，但是 Dart 提供了其他备选方案：<a href="https://api.dart.dev/stable/dart-async/Future-class.html" target="_blank" rel="noopener">Future</a> 和 <a href="https://api.dart.dev/stable/dart-async/Stream-class.html" target="_blank" rel="noopener">Stream</a> 。一个 Future 就像一个在未来某个时间返回数据的一个承诺。 Stream 是获取数据序列的一种方式，比如事件。关于 Future、Stream 等的更多文档参考 <a href="https://api.dart.dev/stable/dart-async/dart-async-library.html" target="_blank" rel="noopener">dart:async API reference</a> 。 &gt; 很多时候你不需要自己直接使用 Future 和 Stream 的 API。Dart 语言支持使用 <code>async</code> 和 <code>await</code> 进行异步编程。参考 <a href="https://dart.dev/codelabs/async-await" target="_blank" rel="noopener">asynchronous programming codelab</a> 。</p>
+<p>dart:async 库支持 web 和 命令行应用，导入后即可使用： <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> dart:<span class="keyword">async</span>;</span><br></pre></td></tr></table></figure> ### Future 对 Future 的使用遍布 Dart 的各种多，经常作为异步方法的返回值。当一个 future 运行完成后，它的值就可以使用了。 #### Using await 在直接使用 Future API 之前，要先考虑是否可以使用 <code>await</code> 代替。因为使用 <code>await</code> 表达式比使用 Future 的代码更容易理解。</p>
+<p>看下边的代码。它使用了 Future 的 <code>then()</code> 方法来依次执行3个异步函数，等前一个执行完成后执行下一个。 <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">runUsinngFuture() &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    findEntryPoint().then((entryPoint) &#123;</span><br><span class="line">        <span class="keyword">return</span> runExecutable(entryPoint, args);</span><br><span class="line">    &#125;).then(flushThenExit);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 等效的 <code>await</code> 代码入下： <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">runUsingAsyncAwait() <span class="keyword">async</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">var</span> entryPoint = <span class="keyword">await</span> findEntryPoint();</span><br><span class="line">    <span class="keyword">var</span> exitCode = <span class="keyword">await</span> rumExecutable(entryPoint, args);</span><br><span class="line">    <span class="keyword">await</span> flushThenExit(exitCode);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <code>async</code> 函数可以处理 Future 的异常： <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> entryPoint = <span class="keyword">await</span> findEntryPoint();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> exitCode = <span class="keyword">await</span>  runExecutable(entryPoint, args);</span><br><span class="line">    <span class="keyword">await</span> flushThenExit(exitCode);</span><br><span class="line">&#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">    <span class="comment">// Handle the error...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> &gt; 异步方法返回值类型是 Future 。如果不希望函数返回 Future 对象，你必须使用其他解决方案。比如调用 <code>async</code> 函数。</p>
+<p>关于 <code>await</code> 的使用餐你考 <a href="https://dart.dev/codelabs/async-await" target="_blank" rel="noopener">asynchronous programming codelab</a> 。 #### Basic usage 使用 <code>then()</code> 来调度</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Zhang Yuzheng</li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://www.zhangyuzheng.com/uncategorized/dart_core_library_tour/" title="dart_core_library_tour">https://www.zhangyuzheng.com/uncategorized/dart_core_library_tour/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by/4.0/" rel="external nofollow" target="_blank">CC BY 4.0</a> unless stating additionally.</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Express/GetStartedWithExpress/" rel="next" title="Get Started with Express">
+                <i class="fa fa-chevron-left"></i> Get Started with Express
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Zhang Yuzheng</p>
+              <p class="site-description motion-element" itemprop="description">码农日常</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/%20%7C%7C%20archive">
+                
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#a-tour-of-the-core-libraries"><span class="nav-number">1.</span> <span class="nav-text">A tour of the core libraries</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#dartcore---numbers-collection-strings-and-more"><span class="nav-number">1.1.</span> <span class="nav-text">dart:core - numbers, collection, strings, and more</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#printing-to-the-console"><span class="nav-number">1.1.1.</span> <span class="nav-text">Printing to the console</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#numbers"><span class="nav-number">1.1.2.</span> <span class="nav-text">Numbers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#strings-and-regular-expressions"><span class="nav-number">1.1.3.</span> <span class="nav-text">Strings and regular expressions</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dartasync---asynchronous-programming"><span class="nav-number">1.2.</span> <span class="nav-text">dart:async - asynchronous programming</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhang Yuzheng</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v4.0.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.2"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.2"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+    <script id="dsq-count-scr" src="https://zhangyuzheng-com.disqus.com/count.js" async></script>
+  
+
+  
+    <script type="text/javascript">
+      var disqus_config = function () {
+        this.page.url = 'https://www.zhangyuzheng.com/uncategorized/dart_core_library_tour/';
+        this.page.identifier = 'uncategorized/dart_core_library_tour/';
+        this.page.title = 'dart_core_library_tour';
+        };
+      function loadComments () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://zhangyuzheng-com.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      }
+      
+        loadComments();
+      
+    </script>
+  
+
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

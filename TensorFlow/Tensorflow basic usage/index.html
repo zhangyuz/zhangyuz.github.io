@@ -443,9 +443,9 @@
 <h3 id="在-session-中运行图launching-the-graph-in-a-session">在 Session 中运行图(Launching the graph in a session)</h3>
 <p>在构造图之后就可以运行图了。运行图之前需要先创建 <code>Session</code> 对象。不需要参数的Session构造函数（译注：session constructor）就会运行默认图。 参考 <a href="https://www.tensorflow.org/api_docs/python/client#session_management" target="_blank" rel="noopener">Session class</a>查看完整的Session API文档。 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 启动默认图</span></span><br><span class="line">sess = tf.Session()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用session的run()函数并把 ‘product’（表示matmul操作的输出）作为传输传递给它来运行 matmul操作。</span></span><br><span class="line"><span class="comment"># 这表示我们想要 ‘matmul’ 操作的输出。</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># 操作所需的参数由 session 自动运算并传递。</span></span><br><span class="line"><span class="comment"># 通常这些运算是并行运行的。</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># 对 ‘run(product)’ 的调用使图中3个操作得以执行：2个常量和一个矩阵乘法。</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># 矩阵乘法的输出 ‘numpy’ 的 ‘ndarray’ 对象保存在 ‘result’ 中。</span></span><br><span class="line">result = sess.run(product)</span><br><span class="line">print(result)</span><br><span class="line"><span class="comment"># ==&gt; [[ 12.]]</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 完工，关闭session。</span></span><br><span class="line">sess.close()</span><br></pre></td></tr></table></figure> 使用完后关闭 Session 释放资源。也可以用 <code>with</code> 语句块进入 <code>Session</code>中执行。<code>Session</code> 会在 <code>with</code> 代码块结束后自动关闭。 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">  result = sess.run([product])</span><br><span class="line">  print(result)</span><br></pre></td></tr></table></figure> TensorFlow把图定义翻译成可被分配到计算资源（CPU、GPU）的可执行操作。一般来说你不需要指定CPU或GPU。TensorFlow会使用你的第一个GPU进行尽可能多的操作。 如果你的机器包含不止一个GPU，为了使用其他的GPU，你必须手动分配操作到指定GPU。使用 <code>with...Device</code> 语句来为操作指定CPU或GPU设备： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">  <span class="keyword">with</span> tf.device(<span class="string">"/gpu:1"</span>):</span><br><span class="line">    matrix1 = tf.constant([[<span class="number">3.</span>, <span class="number">3.</span>]])</span><br><span class="line">    matrix2 = tf.constant([[<span class="number">2.</span>],[<span class="number">2.</span>]])</span><br><span class="line">    product = tf.matmul(matrix1, matrix2)</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure> 设备是使用字符串指定。目前支持的设备包括：</p>
 <ul>
-<li><code>&quot;/cpu:0&quot;</code>：你机器的CPU。</li>
-<li><code>&quot;/gpu:0&quot;</code>：你机器的GPU。</li>
-<li><code>&quot;/gpu:1&quot;</code>：你机器的第二块GPU。</li>
+<li><code>"/cpu:0"</code>：你机器的CPU。</li>
+<li><code>"/gpu:0"</code>：你机器的GPU。</li>
+<li><code>"/gpu:1"</code>：你机器的第二块GPU。</li>
 </ul>
 <p>参考<a href="https://www.tensorflow.org/how_tos/using_gpu/index" target="_blank" rel="noopener">Using GPUs</a>查看TensorFlow使用GPU的更多信息。</p>
 <h3 id="在分布式session中启动图launching-the-graph-in-a-distributed-session">在分布式Session中启动图(Launching the graph in a distributed session)</h3>
@@ -604,7 +604,7 @@
                 
                   <a href="/archives/%20%7C%7C%20archive">
                 
-                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-count">12</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -731,7 +731,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>

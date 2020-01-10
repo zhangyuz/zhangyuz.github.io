@@ -424,14 +424,14 @@
 
       
         <h1 id="variables-creation-initialization-saving-and-loading">Variables: Creation, Initialization, Saving, and Loading</h1>
-<p>在训练模型的过程中，我们使用 <code>Variable</code> 来保存和更新参数。<code>Variable</code> 是用来保存 Tensor<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> 的内存缓冲区，你必须明确声明它们。无论是在训练的过程中或者之后，你都可以把它们保存到磁盘中。之后你可以从磁盘读取之前保存的内容来继续训练或者分析模型。</p>
+<p>在训练模型的过程中，我们使用 <code>Variable</code> 来保存和更新参数。<code>Variable</code> 是用来保存 Tensor<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> 的内存缓冲区，你必须明确声明它们。无论是在训练的过程中或者之后，你都可以把它们保存到磁盘中。之后你可以从磁盘读取之前保存的内容来继续训练或者分析模型。</p>
 <p>本文使用了下面的类，打开下面的链接查看详细文档：</p>
 <ul>
 <li><a href="https://www.tensorflow.org/api_docs/python/state_ops/variables#Variable" target="_blank" rel="noopener">tf.Variable</a></li>
 <li><a href="https://www.tensorflow.org/api_docs/python/state_ops/saving_and_restoring_variables#Saver" target="_blank" rel="noopener">tf.train.Saver</a></li>
 </ul>
 <h2 id="creation">Creation</h2>
-<p>创建 Variable 时你需要给它的构造函数 <code>tf.Variable()</code> 传递一个 Tensor<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> 作为它的初始值。TensorFlow 提供了一系列使用常量或随机值来生成 Tensor 的操作。</p>
+<p>创建 Variable 时你需要给它的构造函数 <code>tf.Variable()</code> 传递一个 Tensor<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> 作为它的初始值。TensorFlow 提供了一系列使用常量或随机值来生成 Tensor 的操作。</p>
 <p>你要知道这些操作都需要你指定生成的 Tensor 的形状，这个形状就自动成为了生成的 Variable 的形状。一般 Variable 的形状都是固定的，但是 TensorFlow 提供了修改 Variable 形状的高级机制。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Create two variables.</span></span><br><span class="line">weights = tf.Variable(tf.random_normal([<span class="number">784</span>, <span class="number">200</span>], stddev=<span class="number">0.35</span>),</span><br><span class="line">                      name=<span class="string">"weights"</span>)</span><br><span class="line">biases = tf.Variable(tf.zeros([<span class="number">200</span>]), name=<span class="string">"biases"</span>)</span><br></pre></td></tr></table></figure>
 <p>通过调用 <code>tf.Variable()</code> 函数，你对图添加了如下操作：</p>
@@ -480,11 +480,11 @@
 <li>如果你只在 Session 开始的时候恢复模型中的部分变量，那么你必须运行初始化操作来初始化其他的变量。参考 <a href="https://www.tensorflow.org/api_docs/python/state_ops/exporting_and_importing_meta_graphs#initialize_variables" target="_blank" rel="noopener"><code>tf.initialize_variables()</code></a> 。</li>
 </ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Create some variables.</span></span><br><span class="line">v1 = tf.Variable(..., name=<span class="string">"v1"</span>)</span><br><span class="line">v2 = tf.Variable(..., name=<span class="string">"v2"</span>)</span><br><span class="line">...</span><br><span class="line"><span class="comment"># Add ops to save and restore only 'v2' using the name "my_v2"</span></span><br><span class="line">saver = tf.train.Saver(&#123;<span class="string">"my_v2"</span>: v2&#125;)</span><br><span class="line"><span class="comment"># Use the saver object normally after that.</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-<section class="footnotes">
+<section class="footnotes" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1"><p><a href="https://www.wikiwand.com/zh-hans/%E5%BC%B5%E9%87%8F" target="_blank" rel="noopener">张量</a><a href="#fnref1" class="footnote-back">↩</a></p></li>
-<li id="fn2"><p><a href="https://www.wikiwand.com/zh-hans/%E5%BC%B5%E9%87%8F" target="_blank" rel="noopener">张量</a><a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn1" role="doc-endnote"><p><a href="https://www.wikiwand.com/zh-hans/%E5%BC%B5%E9%87%8F" target="_blank" rel="noopener">张量</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩</a></p></li>
+<li id="fn2" role="doc-endnote"><p><a href="https://www.wikiwand.com/zh-hans/%E5%BC%B5%E9%87%8F" target="_blank" rel="noopener">张量</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩</a></p></li>
 </ol>
 </section>
 
@@ -630,7 +630,7 @@
                 
                   <a href="/archives/%20%7C%7C%20archive">
                 
-                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-count">12</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -757,7 +757,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
