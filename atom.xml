@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.zhangyuzheng.com/"/>
-  <updated>2020-01-07T07:45:27.252Z</updated>
+  <updated>2020-02-12T04:39:30.205Z</updated>
   <id>https://www.zhangyuzheng.com/</id>
   
   <author>
@@ -15,6 +15,39 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>MacOS 安装 Jdk11,并在多 Jdk 间切换</title>
+    <link href="https://www.zhangyuzheng.com/DailyNotes/MacOS%E5%AE%89%E8%A3%85JDK11/"/>
+    <id>https://www.zhangyuzheng.com/DailyNotes/MacOS安装JDK11/</id>
+    <published>2020-02-12T04:03:00.000Z</published>
+    <updated>2020-02-12T04:39:30.205Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="macos-安装-jdk11">MacOS 安装 Jdk11</h1><ol type="1"><li><p>在 <a href="https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html" target="_blank" rel="noopener">此处</a> 下载Jdk 11。这是此时最新的 LTS 版本。</p></li><li><p>解压缩安装 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo tar -xvf jdk-11.0.6_osx-x64_bin.tar.gz -C /Library/Java/JavaVirtualMachines/</span><br></pre></td></tr></table></figure></p></li><li><p>查看是否安装成功 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 执行此命令</span></span><br><span class="line">java -version</span><br><span class="line"><span class="meta">#</span><span class="bash"> 可以看见系统默认的 java 已经切换到了新版本</span></span><br><span class="line">java version "11.0.6" 2020-01-14 LTS</span><br><span class="line">Java(TM) SE Runtime Environment 18.9 (build 11.0.6+8-LTS)</span><br><span class="line">Java HotSpot(TM) 64-Bit Server VM 18.9 (build 11.0.6+8-LTS, mixed mode)</span><br></pre></td></tr></table></figure></p></li><li><p>查看系统所有已安装的 Jdk <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 执行此命令</span></span><br><span class="line">/usr/libexec/java_home -V</span><br><span class="line"><span class="meta">#</span><span class="bash"> 输出</span></span><br><span class="line">Matching Java Virtual Machines (2):</span><br><span class="line">    11.0.6, x86_64:"Java SE 11.0.6"/Library/Java/JavaVirtualMachines/jdk-11.0.6.jdk/Contents/Home</span><br><span class="line">    1.8.0_192, x86_64:"Java SE 8"/Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Home</span><br><span class="line"></span><br><span class="line">/Library/Java/JavaVirtualMachines/jdk-11.0.6.jdk/Contents/Home</span><br></pre></td></tr></table></figure></p></li><li><p>在不同的 Jdk 版本之间切换： <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 切换到 Jdk1.8</span></span><br><span class="line">export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)</span><br><span class="line"><span class="meta">#</span><span class="bash"> 验证切换结果</span></span><br><span class="line">java -version</span><br><span class="line"><span class="meta">#</span><span class="bash"> 已切换到 Jdk1.8</span></span><br><span class="line">java version "1.8.0_192"</span><br><span class="line">Java(TM) SE Runtime Environment (build 1.8.0_192-b12)</span><br><span class="line">Java HotSpot(TM) 64-Bit Server VM (build 25.192-b12, mixed mode)</span><br><span class="line"><span class="meta">#</span><span class="bash"> 切换到 Jdk11</span></span><br><span class="line">export JAVA_HOME=$(/usr/libexec/java_home -v 11)</span><br><span class="line"><span class="meta">#</span><span class="bash"> 验证切换结果</span></span><br><span class="line">java -version</span><br><span class="line"><span class="meta">#</span><span class="bash"> 已切换到 Jdk11</span></span><br><span class="line">java version "11.0.6" 2020-01-14 LTS</span><br><span class="line">Java(TM) SE Runtime Environment 18.9 (build 11.0.6+8-LTS)</span><br><span class="line">Java HotSpot(TM) 64-Bit Server VM 18.9 (build 11.0.6+8-LTS, mixed mode)</span><br></pre></td></tr></table></figure></p></li></ol><blockquote><p>在第一步下载 Jdk 时网站会需要你登录。</p></blockquote>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;macos-安装-jdk11&quot;&gt;MacOS 安装 Jdk11&lt;/h1&gt;
+&lt;ol type=&quot;1&quot;&gt;
+&lt;li&gt;&lt;p&gt;在 &lt;a href=&quot;https://www.oracle.com/technetwork/java/javase/downloads/jdk11-d
+      
+    
+    </summary>
+    
+      <category term="DailyNotes" scheme="https://www.zhangyuzheng.com/categories/DailyNotes/"/>
+    
+    
+      <category term="MacOS" scheme="https://www.zhangyuzheng.com/tags/MacOS/"/>
+    
+      <category term="Jdk" scheme="https://www.zhangyuzheng.com/tags/Jdk/"/>
+    
+      <category term="安装" scheme="https://www.zhangyuzheng.com/tags/%E5%AE%89%E8%A3%85/"/>
+    
+      <category term="Jdk切换" scheme="https://www.zhangyuzheng.com/tags/Jdk%E5%88%87%E6%8D%A2/"/>
+    
+  </entry>
   
   <entry>
     <title>dart_core_library_tour</title>
