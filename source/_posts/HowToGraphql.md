@@ -54,7 +54,7 @@ GraphQL 服务在运行的时候，能够接收 GraphQL 查询，验证并执行
 ```
 
 
-## 核心概念
+## Queries and mutations
 ### Fields
 简化来说，GraphQL 的功能就是从对象中获取数据成员（field）。
 ```json
