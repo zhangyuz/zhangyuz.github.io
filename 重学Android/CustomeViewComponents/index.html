@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="自定义 View 创建自定义View 的步骤： 1. 继承 View 创建你自己的类 2. 提供构造函数，自定义属性 3. 创建事件的监听 4. override onMeasure 和 onDraw 方法。默认的 onDraw 什么都不干， onMeasure 默认设置 100 X 100 的大小 5. 按需 override 其他的 on... 方法 Override onDarw 和 onM">
+<meta name="keywords" content="Android,View,自定义View">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自定义 Vieew">
+<meta property="og:url" content="https:&#x2F;&#x2F;www.zhangyuzheng.com&#x2F;%E9%87%8D%E5%AD%A6Android&#x2F;CustomeViewComponents&#x2F;index.html">
+<meta property="og:site_name" content="memorandums">
+<meta property="og:description" content="自定义 View 创建自定义View 的步骤： 1. 继承 View 创建你自己的类 2. 提供构造函数，自定义属性 3. 创建事件的监听 4. override onMeasure 和 onDraw 方法。默认的 onDraw 什么都不干， onMeasure 默认设置 100 X 100 的大小 5. 按需 override 其他的 on... 方法 Override onDarw 和 onM">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2020-03-27T11:21:36.539Z">
+<meta name="twitter:card" content="summary">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="memorandums" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://www.zhangyuzheng.com/重学Android/CustomeViewComponents/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>自定义 Vieew | memorandums</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">memorandums</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">life notes</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.zhangyuzheng.com/%E9%87%8D%E5%AD%A6Android/CustomeViewComponents/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhang Yuzheng">
+      <meta itemprop="description" content="码农日常">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="memorandums">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">自定义 Vieew
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-03-25 22:15:00" itemprop="dateCreated datePublished" datetime="2020-03-25T22:15:00+08:00">2020-03-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-03-27 19:21:36" itemprop="dateModified" datetime="2020-03-27T19:21:36+08:00">2020-03-27</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/%E9%87%8D%E5%AD%A6Android/" itemprop="url" rel="index"><span itemprop="name">重学Android</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/%E9%87%8D%E5%AD%A6Android/CustomeViewComponents/#comments" itemprop="discussionUrl">
+                
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="重学Android/CustomeViewComponents/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="自定义-view">自定义 View</h2>
+<p>创建自定义View 的步骤： 1. 继承 <code>View</code> 创建你自己的类 2. 提供构造函数，自定义属性 3. 创建事件的监听 4. override <code>onMeasure</code> 和 <code>onDraw</code> 方法。默认的 <code>onDraw</code> 什么都不干， <code>onMeasure</code> 默认设置 100 X 100 的大小 5. 按需 override 其他的 <code>on...</code> 方法</p>
+<h2 id="override-ondarw-和-onmeasure">Override <code>onDarw</code> 和 <code>onMeasure</code></h2>
+<p><code>onDraw</code> 方法传入一个 <code>Canvas</code>，你可以在 <code>Canvas</code> 上实现你的功能：2D作图、文字式样等任何你能想到的东西。 &gt; <code>Canvas</code> 不适用于 3D 作图。你可以继承 <code>SurfaceView</code> ，并且在独立的现成中进行绘图，来实现3D的图形。</p>
+<p><code>onMeasure</code> 是 View 本身和它的 Container 之间进行 View 尺寸约定的重要方法。<code>onMeasure</code> 需要高效又精确的报告它所包含的部分的测量结果。由于它的 Container 的限制、并且 <code>setMeasuredDimension</code> 需要传入计算过的宽度和高度，这让 <code>onMeasure</code> 的实现有些复杂。<em>在 <code>onMeasure</code> 中必须调用 <code>setMeasuredDimension</code> 来对外通知它的计算结果。</em> 从更高的角度来看， <code>onMeasure</code> 的调用过程概括如下： 1. 调用 <code>onMeasure</code> 方法，并传入宽和高的限制。 2. 在 <code>onMeasure</code> 中计算测量过的宽和高，这是渲染当前组件所必须的参数。它的宽和高应该保持在传入的限制之内。当然你也可以大于传入的限制（这时它的 Container 会选择对于这种情况应该如何处理，例如剪切、滚动、抛出异常、传入不同的参数重新调用 <code>onMeasure</code> 方法）。 3. 宽和高计算完成后，必须调用 <code>setMeasuredDimension</code> 方法传入计算好的值。</p>
+<p>其他常用的方法： | 分类 | 方法 | 说明 | | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | | Creation | 构造方法 | 两种形式：1 从代码调用构造方法 2 通过layout 文件 inflate View，这里需要解析和应用你再布局文件中定义的属性 | | | <a href="https://developer.android.com/reference/android/view/View#onFinishInflate()" target="_blank" rel="noopener">onFinishInflate</a> | 在View自身和它的子View 全部 inflate 完成之后调用 | | Layout | <a href="https://developer.android.com/reference/android/view/View#onMeasure(int,%20int)" target="_blank" rel="noopener">onMeasure</a> | 决定 view 的尺寸需求 | | | <a href="https://developer.android.com/reference/android/view/View#onLayout(boolean,%20int,%20int,%20int,%20int)" target="_blank" rel="noopener">onLayout</a> | 在需要给子View 分配尺寸和位置的时候调用 | | | <a href="https://developer.android.com/reference/android/view/View#onSizeChanged(int,%20int,%20int,%20int)" target="_blank" rel="noopener">onSizeChanged</a> | 当自己的尺寸发生变化的时候调用 | | Drawing | <a href="https://developer.android.com/reference/android/view/View#onDraw(android.graphics.Canvas)" target="_blank" rel="noopener">onDraw</a> | 在View 需要渲染其中的内容时调用 | | Event processing | <a href="https://developer.android.com/reference/android/view/View#onKeyDown(int,%20android.view.KeyEvent)" target="_blank" rel="noopener">onKeyDown</a> | 当发生新的按键事件时调用 | | | <a href="https://developer.android.com/reference/android/view/View#onKeyUp(int,%20android.view.KeyEvent)" target="_blank" rel="noopener">onKayUp</a> | 按键抬起时调用 | | | <a href="https://developer.android.com/reference/android/view/View#onTrackballEvent(android.view.MotionEvent)" target="_blank" rel="noopener">onTrackballEvent</a> | Trackball 事件发生时调用 | | | <a href="https://developer.android.com/reference/android/view/View#onTouchEvent(android.view.MotionEvent)" target="_blank" rel="noopener">onTouchEvent</a> | 触摸事件发生时调用 | | Focus | <a href="https://developer.android.com/reference/android/view/View#onFocusChanged(boolean,%20int,%20android.graphics.Rect)" target="_blank" rel="noopener">onFocusChanged</a> | 当得到或失去焦点时调用 | | | <a href="https://developer.android.com/reference/android/view/View#onWindowFocusChanged(boolean)" target="_blank" rel="noopener">onWindowFocusChanged</a> | 当所在窗口获得或失去焦点时调用 | | Attaching | <a href="https://developer.android.com/reference/android/view/View#onAttachedToWindow()" target="_blank" rel="noopener">onAttachedToWindow</a> | 当View attach 到 Winddow 的时候调用 | | | <a href="https://developer.android.com/reference/android/view/View#onDetachedFromWindow()" target="_blank" rel="noopener">onDetachedFromWindow</a> | 当 View 从 Window detach 的时候调用 | | | <a href="https://developer.android.com/reference/android/view/View#onWindowVisibilityChanged(int)" target="_blank" rel="noopener">onWindowVisibiityChanged</a> | 当包含View的窗口的可见性改变的时候调用 |</p>
+<h2 id="compound-controls">Compound Controls</h2>
+<p>如果你不希望从头创建一个新View，而是想重用已有的组件，那么就创建一个复合组件。简单的说就是把更多的原子操作的能力增加给逻辑上的一组组件，这样他就可以被视为一个组件。比如一个下拉框可以认为是由一个EditText、按钮和 PopupList 组成的。 创建复合组件的步骤： 1. 创建ViewGroup的子类。 2. 在构造函数中接受父类需要的参数，通过父类的构造函数传递给父类。你也可以通过XML定义你自己的属性。 3. 你也可以创建自己的事件的监听器，自定义对事件的响应。 4. 你还可以创建你自己的属性，比如给EditText增加初始值。 5. 如果你继承了一个 Layout ，你可能不需要再 override <code>onDraw</code> 和 <code>onMeasure</code> 方法，因为 Layout 已经默认实现了这两个方法。 6. 你可能还需要 override 其它的 <code>on...</code> 方法来完成你的功能。</p>
+<p>继承 Layout 有如下优点： - 可以使用 XML 指定布局，也可以在代码中创建视图 - 默认的 <code>onDraw</code> 和 <code>onMeasure</code> 方法可能已经满足需求，无需 override 他们 - 把它作为普通的组件重用</p>
+<h2 id="modifying-an-existing-view-type">Modifying an Existing View Type</h2>
+<p>可以通过修改 Android 已有的 View 来实现对其功能的定制。参考Android Sample 中的 <a href="https://android.googlesource.com/platform/development/+/master/samples/NotePad" target="_blank" rel="noopener">Notepad</a>。 1. 定义类：<code>public static class LinedEditText extends EditText</code> 。 <code>LinedEditText</code> 是 <code>NoteEditor</code> 的静态子类，可已被其他类访问到。它更类似一个独立的类，而不是依赖于 <code>NoteEditor</code> 的类。它继承了 <code>EditText</code>，因为在这个例子中，它的功能只要扩展默认的 <code>EditText</code> 即可。 2. 类初始化：首先调用父类的构造函数。 3. Override 方法：本例中，只覆写了 <code>onDraw</code> 方法，你也可以按需 override 其他方法。 4. 使用自定义类： <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 因为 LinedEditText 是内部类，所以这里使用了内部类的标准表示方法，使用完整的包名指定了 View --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">view</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">class</span>=<span class="string">"com.example.android.notepad.NoteEditor$LinedEditText"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:id</span>=<span class="string">"@+id/note"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:background</span>=<span class="string">"@android:color/transparent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:padding</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:scrollbars</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:fadingEdge</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:gravity</span>=<span class="string">"top"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:textSize</span>=<span class="string">"22sp"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:capitalize</span>=<span class="string">"sentences"</span></span></span><br><span class="line"><span class="tag">/&gt;</span></span><br></pre></td></tr></table></figure> 或者 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 如果 LinedEditText 不是内部类，可以这样使用 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">com.example.android.notepad.LinedEditText</span></span></span><br><span class="line"><span class="tag">  <span class="attr">id</span>=<span class="string">"@+id/note"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">...</span> /&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="creating-a-custom-view-class">Creating a custom view class</h2>
+<p>定制 View 的原则： - 遵守 Android 标准 - 提供 Android XML 布局使用的定制 styleable 属性 - 发送辅助事件（accessibility） - 兼容多个 Android 系统平台</p>
+<h3 id="subclass-a-view">Subclass a View</h3>
+<p>为了让 Android Studio 能够与你的 View 交互，至少要定义接收 <code>Context</code> 和 <code>AttributeSet</code> 参数的构造函数。这样 AndroidStudio 布局编辑器就可以创建、编辑你自定义 View 的实例了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PieChart</span> <span class="keyword">extends</span> <span class="title">View</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PieChart</span><span class="params">(Context context, AttributeSet attrs)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context, attrs);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="define-custom-attributes">Define Custom Attributes</h3>
+<p>自定义 View XML 属性的定义方式： - 使用 <code>&lt;declare-styleable&gt;</code> 定义属性 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- res/values/attrs.xml</span></span><br><span class="line"><span class="comment">这里增加了两个属性，showText 和 labelPosition，类型分别是 boolean 和枚举类型 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">resources</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">declare-styleable</span> <span class="attr">name</span>=<span class="string">"PieChart"</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"showText"</span> <span class="attr">format</span>=<span class="string">"boolean"</span> /&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"labelPosition"</span> <span class="attr">format</span>=<span class="string">"enum"</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">enum</span> <span class="attr">name</span>=<span class="string">"left"</span> <span class="attr">value</span>=<span class="string">"0"</span>/&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">enum</span> <span class="attr">name</span>=<span class="string">"right"</span> <span class="attr">value</span>=<span class="string">"1"</span>/&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">attr</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">declare-styleable</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">resources</span>&gt;</span></span><br></pre></td></tr></table></figure> - 在 XML 布局中指定属性的值 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 指定namespace后就可以像使用内置属性一样使用自定义属性了。</span></span><br><span class="line"><span class="comment">自定义的namespace是 http://schemas.android.com/apk/res/[your package name]</span></span><br><span class="line"><span class="comment">如果 PieChart 有个内部类 PieView，你需要这样使用它：com.example.customviews.charting.PieChart$PieView --&gt;</span></span><br><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">   <span class="attr">xmlns:custom</span>=<span class="string">"http://schemas.android.com/apk/res/com.example.customviews"</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">com.example.customviews.charting.PieChart</span></span></span><br><span class="line"><span class="tag">     <span class="attr">custom:showText</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">     <span class="attr">custom:labelPosition</span>=<span class="string">"left"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure> - 运行时获取属性值，当从XML创建View的时候，所有的XML属性通过 <code>AttributeSet</code> 参数传递给构造方法。这样就可以从 AttributeSet 中获取属性值，但那是有两个缺点 - 属性值中引用的其他资源并没有处理 - 式样没有应用 你可以这样处理：将 <code>AttributeSet</code> 传给 <code>obtainStyledAttributes</code>， 这个方法帮你返回已处理好引用资源和式样的 <code>TypedArray</code>。 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">PieChart</span><span class="params">(Context context, AttributeSet attrs)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">super</span>(context, attrs);</span><br><span class="line">   TypedArray a = context.getTheme().obtainStyledAttributes(</span><br><span class="line">        attrs,</span><br><span class="line">        R.styleable.PieChart,</span><br><span class="line">        <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">   <span class="keyword">try</span> &#123;</span><br><span class="line">       mShowText = a.getBoolean(R.styleable.PieChart_showText, <span class="keyword">false</span>);</span><br><span class="line">       textPos = a.getInteger(R.styleable.PieChart_labelPosition, <span class="number">0</span>);</span><br><span class="line">   &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">       <span class="comment">// TypedArray 是共享资源，使用完毕后必须回收</span></span><br><span class="line">       a.recycle();</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> - 使用获取的属性值。属性的值在View 初始化的时候设置。你可以给定制属性增加对应的方法。 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isShowText</span><span class="params">()</span> </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> mShowText;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setShowText</span><span class="params">(<span class="keyword">boolean</span> showText)</span> </span>&#123;</span><br><span class="line">   mShowText = showText;</span><br><span class="line">   <span class="comment">// 在任何显示可能会改变的操作后，知系统重画视图</span></span><br><span class="line">   invalidate();</span><br><span class="line">   <span class="comment">// 在任何可能影响布局（形状、尺寸）的改变操作后，通知系统重新布局</span></span><br><span class="line">   requestLayout();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="design-for-accessibility">Design For Accessibility</h3>
+<p>如果你的定制 View 需要支持各种用户，你应该增加对残疾人的支持： - 使用 <code>android:contentDescription</code> 来标记输入框 - 使用 <a href="https://developer.android.com/reference/android/view/accessibility/AccessibilityEventSource#sendAccessibilityEvent(int)" target="_blank" rel="noopener">sendAccessibility</a> 发送辅助时间 - 支持 D-pad 和 trackball</p>
+<h2 id="custom-drawing">Custom Drawing</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">android.graphics 框架将图形编程分成了两大类：</span></span><br><span class="line"><span class="comment">- Canvas 处理图形的内容，画什么东西</span></span><br><span class="line"><span class="comment">- Paint 处理画图的方法，如何画</span></span><br><span class="line"><span class="comment">比如 Canvas 提供了划线方法，而使用 Paint 来确定线的颜色。简单来说吗， Canvas 定义了你可以绘制的内容，Paint 决定了这些内容的颜色、式样、字体等。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 在开始绘制之前初始化 Paint 等。</span></span><br><span class="line">   textPaint = <span class="keyword">new</span> Paint(Paint.ANTI_ALIAS_FLAG);</span><br><span class="line">   textPaint.setColor(textColor);</span><br><span class="line">   <span class="keyword">if</span> (textHeight == <span class="number">0</span>) &#123;</span><br><span class="line">       textHeight = textPaint.getTextSize();</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">       textPaint.setTextSize(textHeight);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   piePaint = <span class="keyword">new</span> Paint(Paint.ANTI_ALIAS_FLAG);</span><br><span class="line">   piePaint.setStyle(Paint.Style.FILL);</span><br><span class="line">   piePaint.setTextSize(textHeight);</span><br><span class="line"></span><br><span class="line">   shadowPaint = <span class="keyword">new</span> Paint(<span class="number">0</span>);</span><br><span class="line">   shadowPaint.setColor(<span class="number">0xff101010</span>);</span><br><span class="line">   shadowPaint.setMaskFilter(<span class="keyword">new</span> BlurMaskFilter(<span class="number">8</span>, BlurMaskFilter.Blur.NORMAL));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">当View的尺寸第一次确定后，此方法会被调用，此后View的尺寸有任何的变化都会调用此方法。与 View 尺寸相关的位置、尺寸等任何与 Size 相关的计算都应该在这里进行计算，不要每次使用的时候重复计算。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onSizeChanged</span><span class="params">(<span class="keyword">int</span> w, <span class="keyword">int</span> h, <span class="keyword">int</span> oldw, <span class="keyword">int</span> oldh)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// w 和 h 包含了视图内部的 padding，如果涉及padding，要自己计算</span></span><br><span class="line">    <span class="comment">// Account for padding</span></span><br><span class="line">    <span class="keyword">float</span> xpad = (<span class="keyword">float</span>)(getPaddingLeft() + getPaddingRight());</span><br><span class="line">    <span class="keyword">float</span> ypad = (<span class="keyword">float</span>)(getPaddingTop() + getPaddingBottom());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Account for the label</span></span><br><span class="line">    <span class="keyword">if</span> (showText) xpad += textWidth;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">float</span> ww = (<span class="keyword">float</span>)w - xpad;</span><br><span class="line">    <span class="keyword">float</span> hh = (<span class="keyword">float</span>)h - ypad;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 根据 padding 和 视图的 size，确定饼形图的最大尺寸</span></span><br><span class="line">    <span class="comment">// Figure out how big we can make the pie.</span></span><br><span class="line">    <span class="keyword">float</span> diameter = Math.min(ww, hh);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">传入的参数表示父视图希望的子 View 的尺寸，以及这个尺寸是强制的还是一个建议。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onMeasure</span><span class="params">(<span class="keyword">int</span> widthMeasureSpec, <span class="keyword">int</span> heightMeasureSpec)</span> </span>&#123;</span><br><span class="line">   <span class="comment">// 这里尝试让自己的区域最大化</span></span><br><span class="line">   <span class="comment">// Try for a width based on our minimum，自己计算要包含的 padding 的距离</span></span><br><span class="line">   <span class="keyword">int</span> minw = getPaddingLeft() + getPaddingRight() + getSuggestedMinimumWidth();</span><br><span class="line"></span><br><span class="line">   <span class="comment">// resolveSizeAndState 用来帮助创建最终的宽和高的值。返回 View.MeasureSpec。</span></span><br><span class="line">   <span class="keyword">int</span> w = resolveSizeAndState(minw, widthMeasureSpec, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">   <span class="comment">// Whatever the width ends up being, ask for a height that would let the pie</span></span><br><span class="line">   <span class="comment">// get as big as it can，自己计算要包含的 padding 的距离</span></span><br><span class="line">   <span class="keyword">int</span> minh = MeasureSpec.getSize(w) - (<span class="keyword">int</span>)mTextWidth + getPaddingBottom() + getPaddingTop();</span><br><span class="line">   <span class="keyword">int</span> h = resolveSizeAndState(MeasureSpec.getSize(w) - (<span class="keyword">int</span>)mTextWidth, heightMeasureSpec, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 此方法无返回值，必须调用 setMeasuredDimension 来将计算结果同步出去。</span></span><br><span class="line">   setMeasuredDimension(w, h);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDraw</span><span class="params">(Canvas canvas)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">super</span>.onDraw(canvas);</span><br><span class="line"></span><br><span class="line">   <span class="comment">// Draw the shadow</span></span><br><span class="line">   canvas.drawOval(</span><br><span class="line">           shadowBounds,</span><br><span class="line">           shadowPaint</span><br><span class="line">   );</span><br><span class="line"></span><br><span class="line">   <span class="comment">// Draw the label text</span></span><br><span class="line">   canvas.drawText(data.get(currentItem).mLabel, textX, textY, textPaint);</span><br><span class="line"></span><br><span class="line">   <span class="comment">// Draw the pie slices</span></span><br><span class="line">   <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; data.size(); ++i) &#123;</span><br><span class="line">       Item it = data.get(i);</span><br><span class="line">       piePaint.setShader(it.shader);</span><br><span class="line">       canvas.drawArc(bounds,</span><br><span class="line">               <span class="number">360</span> - it.endAngle,</span><br><span class="line">               it.endAngle - it.startAngle,</span><br><span class="line">               <span class="keyword">true</span>, piePaint);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// Draw the pointer</span></span><br><span class="line">   canvas.drawLine(textX, pointerY, pointerX, pointerY, textPaint);</span><br><span class="line">   canvas.drawCircle(pointerX, pointerY, pointerSize, mTextPaint);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="making-the-view-interactive">Making the View Interactive</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyListener</span> <span class="keyword">extends</span> <span class="title">GestureDetector</span>.<span class="title">SimpleOnGestureListener</span> </span>&#123;</span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onDown</span><span class="params">(MotionEvent e)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line">detector = <span class="keyword">new</span> GestureDetector(PieChart.<span class="keyword">this</span>.getContext(), <span class="keyword">new</span> MyListener());</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">boolean</span> result = detector.onTouchEvent(event);</span><br><span class="line">   <span class="keyword">if</span> (!result) &#123;</span><br><span class="line">       <span class="keyword">if</span> (event.getAction() == MotionEvent.ACTION_UP) &#123;</span><br><span class="line">           stopScrolling();</span><br><span class="line">           result = <span class="keyword">true</span>;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="create-physical-plausible-motion">Create Physical Plausible Motion</h2>
+<p>符合物理规律的动画。Android 系统提供了 <a href="https://developer.android.com/reference/android/widget/Scroller" target="_blank" rel="noopener">Scroller</a> 来帮助处理类似飞轮的的 fling 手势。 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onFling</span><span class="params">(MotionEvent e1, MotionEvent e2, <span class="keyword">float</span> velocityX, <span class="keyword">float</span> velocityY)</span> </span>&#123;</span><br><span class="line">   <span class="comment">// 很多人觉得 GestureDetector 计算出来的 velocity 太快了，经常除以 4 或 8 后再使用</span></span><br><span class="line">   scroller.fling(currentX, currentY, velocityX / SCALE, velocityY / SCALE, minX, minY, maxX, maxY);</span><br><span class="line">   postInvalidate();</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Zhang Yuzheng</li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://www.zhangyuzheng.com/%E9%87%8D%E5%AD%A6Android/CustomeViewComponents/" title="自定义 Vieew">https://www.zhangyuzheng.com/%E9%87%8D%E5%AD%A6Android/CustomeViewComponents/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by/4.0/" rel="external nofollow" target="_blank">CC BY 4.0</a> unless stating additionally.</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/View/" rel="tag"># View</a>
+          
+            <a href="/tags/%E8%87%AA%E5%AE%9A%E4%B9%89View/" rel="tag"># 自定义View</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Graphql/GraphQlSchemasAndTypes/" rel="next" title="GraphQL Schemas and Types">
+                <i class="fa fa-chevron-left"></i> GraphQL Schemas and Types
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/%E9%87%8D%E5%AD%A6Android/SurfaceViewSurfaceTextureViewComparasion/" rel="prev" title="SurfaceView、SurfaceTexture 与 TextureView 对比">
+                SurfaceView、SurfaceTexture 与 TextureView 对比 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Zhang Yuzheng</p>
+              <p class="site-description motion-element" itemprop="description">码农日常</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/%20%7C%7C%20archive">
+                
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义-view"><span class="nav-number">1.</span> <span class="nav-text">自定义 View</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#override-ondarw-和-onmeasure"><span class="nav-number">2.</span> <span class="nav-text">Override onDarw 和 onMeasure</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#compound-controls"><span class="nav-number">3.</span> <span class="nav-text">Compound Controls</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#modifying-an-existing-view-type"><span class="nav-number">4.</span> <span class="nav-text">Modifying an Existing View Type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#creating-a-custom-view-class"><span class="nav-number">5.</span> <span class="nav-text">Creating a custom view class</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#subclass-a-view"><span class="nav-number">5.1.</span> <span class="nav-text">Subclass a View</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#define-custom-attributes"><span class="nav-number">5.2.</span> <span class="nav-text">Define Custom Attributes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#design-for-accessibility"><span class="nav-number">5.3.</span> <span class="nav-text">Design For Accessibility</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#custom-drawing"><span class="nav-number">6.</span> <span class="nav-text">Custom Drawing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#making-the-view-interactive"><span class="nav-number">7.</span> <span class="nav-text">Making the View Interactive</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#create-physical-plausible-motion"><span class="nav-number">8.</span> <span class="nav-text">Create Physical Plausible Motion</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhang Yuzheng</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v4.0.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.2"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.2"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+    <script id="dsq-count-scr" src="https://zhangyuzheng-com.disqus.com/count.js" async></script>
+  
+
+  
+    <script type="text/javascript">
+      var disqus_config = function () {
+        this.page.url = 'https://www.zhangyuzheng.com/%E9%87%8D%E5%AD%A6Android/CustomeViewComponents/';
+        this.page.identifier = '重学Android/CustomeViewComponents/';
+        this.page.title = '自定义 Vieew';
+        };
+      function loadComments () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://zhangyuzheng-com.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      }
+      
+        loadComments();
+      
+    </script>
+  
+
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

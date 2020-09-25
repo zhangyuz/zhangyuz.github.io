@@ -436,7 +436,7 @@
 <p>分类问题与回归问题的的区别是我们要预测的值仅仅是有限的离散值。目前集中讨论二值分类的问题（比如分类的结果仅为1和0）。比如我们想构建一个垃圾邮件分配器，<span class="math inline">\(x^{(i)}\)</span>是邮件的一些特征，y=1表示垃圾邮件，y=0表示非垃圾邮件，因此y∈{0,1}。0也称为负类，1成为正类。有时使用"-"和"+"表示。对于指定的<span class="math inline">\(x^{(i)}\)</span>，<span class="math inline">\(y^{(i)}\)</span>也称为训练的标签（label）。</p>
 <h2 id="hypothesis-representation-假设函数的表示">Hypothesis Representation 假设函数的表示</h2>
 <figure>
-<img src="%7Bfilename%7DHypothesisRepresentation01.png" alt="假设函数" /><figcaption>假设函数</figcaption>
+<img src="%7Bfilename%7DHypothesisRepresentation01.png" alt="假设函数" /><figcaption aria-hidden="true">假设函数</figcaption>
 </figure>
 <p>我们想要的结果是 <span class="math inline">\(0≤h_θ≤1\)</span>。 <span class="math inline">\(g(z)=\frac{1}{1+e^{-z}}\)</span> 取值区间为0到1的S型曲线，称为SigmoidFunction或者LogisticFunction。如上图右下角图形所示。 逻辑回归的表达式为<span class="math inline">\(h_θ(x) = θ^Tx\)</span>，为了让<span class="math inline">\(h_θ\)</span>的值位于0到1之间，所以使<span class="math display">\[h_θ(x) = g(θ^Tx) = \frac{1}{1+e^{-θ^Tx}}\]</span> 接下来就是用参数θ来拟合我们的数据集。</p>
 <p><img src="%7Bfilename%7DHypothesisRepresentation02.png" alt="对假设函数的解释" /> 上图是对假设函数的理解： <span class="math inline">\(h_θ(x)\)</span> 的意义是输入为x的时候y=1的概率。例如在某个情况下<span class="math inline">\(h_θ(x) = 0.7\)</span> 我们说在输入x为tumorSize的情况下，y为1的概率是0.7。 <span class="math inline">\(h_θ(x) = P(y=1|x;θ)\)</span></p>
@@ -602,7 +602,7 @@
                 
                   <a href="/archives/%20%7C%7C%20archive">
                 
-                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-count">19</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -690,7 +690,19 @@
                     
                       
                     
-                    <span class="site-state-item-count">21</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">27</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>

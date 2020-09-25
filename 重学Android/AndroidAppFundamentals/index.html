@@ -116,7 +116,7 @@
 <meta property="og:site_name" content="memorandums">
 <meta property="og:description" content="Android 资源分类        目录 资源类型     animator 定义属性动画的 XML 文件   anim 定义 tween 动画的 XML 文件（属性动画的 XML 文件也可以放在这里，但最好把这两类动画区分开）   color 定义颜色的 XML 文件，参考 Color State List Resource   drawable 位图文件(.png .9.png .jpg">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2020-03-23T02:44:02.081Z">
+<meta property="og:updated_time" content="2020-03-26T11:05:30.060Z">
 <meta name="twitter:card" content="summary">
 
 
@@ -360,7 +360,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-03-23 10:44:02" itemprop="dateModified" datetime="2020-03-23T10:44:02+08:00">2020-03-23</time>
+                <time title="Modified: 2020-03-26 19:05:30" itemprop="dateModified" datetime="2020-03-26T19:05:30+08:00">2020-03-26</time>
               
             
           </span>
@@ -426,8 +426,8 @@
         <h2 id="android-资源分类">Android 资源分类</h2>
 <table>
 <colgroup>
-<col style="width: 37%" />
-<col style="width: 62%" />
+<col style="width: 1%" />
+<col style="width: 98%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -487,6 +487,11 @@
 </blockquote>
 <h2 id="configuration-qualifiers">Configuration qualifiers</h2>
 <table>
+<colgroup>
+<col style="width: 4%" />
+<col style="width: 11%" />
+<col style="width: 84%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th>Configuration</th>
@@ -502,8 +507,18 @@
 </tr>
 <tr class="even">
 <td>语言与区域</td>
-<td>比如：en、zh-CN、fr-rCA</td>
-<td></td>
+<td>比如：en、en-rUS、fr-rCA、b+en+US、b+es+419</td>
+<td>语言参考 <a href="http://www.loc.gov/standards/iso639-2/php/code_list.php" target="_blank" rel="noopener">ISO 638-1</a>,地区参考 <a href="https://www.iso.org/obp/ui/#iso:pub:PUB500001:en" target="_blank" rel="noopener">ISO 3166-1-alpha-2</a> 。编码不区分大小写。Android7.0开始支持<a href="https://tools.ietf.org/html/bcp47" target="_blank" rel="noopener">BCP 47 language tags</a>，<a href="https://tools.ietf.org/html/rfc5646" target="_blank" rel="noopener">可以根据语言、地区指定资源</a>。</td>
+</tr>
+<tr class="odd">
+<td>Layout Direction</td>
+<td><em>ldrtl</em> 或 <em>ldltr</em></td>
+<td>layout direction right to left(比如希伯来语、波斯语) or layout direction left to right （大多数语言），必须在manifest 中指定 supportsRtl 我 true 才能启用此功能</td>
+</tr>
+<tr class="even">
+<td>smallestWidth</td>
+<td>sw<N>dp, sw320dp, sw720dp等</td>
+<td>宽、高中数字更小的那个，屏幕最小的宽度，无论屏幕方向如何，你的App至少有N dp 的宽度。在设备方向改变的时候，sw是不会变的的。</td>
 </tr>
 </tbody>
 </table>
@@ -654,7 +669,7 @@
                 
                   <a href="/archives/%20%7C%7C%20archive">
                 
-                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-count">19</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -742,7 +757,19 @@
                     
                       
                     
-                    <span class="site-state-item-count">21</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">27</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
