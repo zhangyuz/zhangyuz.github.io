@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.zhangyuzheng.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文将讨论GraphQL的类型系统和如何定义数据类型（由于 GraphQL 是一种规范，你可以用任何编程语言实现它，这里的讨论将不涉及任何特定的编程语言，只讨论规范中的概念定义）。 Type system GraphQL 的查询语句基本是从对象中查询数据域。查询语句的数据结构与查询返回的数据结构非常接近，但是我们仍然需要明确的知道服务器端可提供的数据：可供的选择的数据域、可能返回什么类型的对象、数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GraphQL Schemas and Types">
+<meta property="og:url" content="https://www.zhangyuzheng.com/Graphql/GraphQlSchemasAndTypes/index.html">
+<meta property="og:site_name" content="memorandums">
+<meta property="og:description" content="本文将讨论GraphQL的类型系统和如何定义数据类型（由于 GraphQL 是一种规范，你可以用任何编程语言实现它，这里的讨论将不涉及任何特定的编程语言，只讨论规范中的概念定义）。 Type system GraphQL 的查询语句基本是从对象中查询数据域。查询语句的数据结构与查询返回的数据结构非常接近，但是我们仍然需要明确的知道服务器端可提供的数据：可供的选择的数据域、可能返回什么类型的对象、数">
+<meta property="og:locale">
+<meta property="article:published_time" content="2020-03-16T14:15:00.000Z">
+<meta property="article:modified_time" content="2021-08-14T03:53:53.474Z">
+<meta property="article:author" content="Zhang Yuzheng">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="Graphql">
+<meta property="article:tag" content="Apollo-Android">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.zhangyuzheng.com/Graphql/GraphQlSchemasAndTypes/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>GraphQL Schemas and Types | memorandums</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="memorandums" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">memorandums</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">life notes</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://www.zhangyuzheng.com/Graphql/GraphQlSchemasAndTypes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhang Yuzheng">
+      <meta itemprop="description" content="码农日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="memorandums">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GraphQL Schemas and Types
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-16 22:15:00" itemprop="dateCreated datePublished" datetime="2020-03-16T22:15:00+08:00">2020-03-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-08-14 11:53:53" itemprop="dateModified" datetime="2021-08-14T11:53:53+08:00">2021-08-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Graphql/" itemprop="url" rel="index"><span itemprop="name">Graphql</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文将讨论GraphQL的类型系统和如何定义数据类型（由于 GraphQL 是一种规范，你可以用任何编程语言实现它，这里的讨论将不涉及任何特定的编程语言，只讨论规范中的概念定义）。</p>
+<h2 id="type-system">Type system</h2>
+<p>GraphQL 的查询语句基本是从对象中查询数据域。查询语句的数据结构与查询返回的数据结构非常接近，但是我们仍然需要明确的知道服务器端可提供的数据：可供的选择的数据域、可能返回什么类型的对象、数据域子对象包含哪些数据域。为了解决这个问题，GraphQL引入了 Schema。</p>
+<p>每个 GraphQL 的服务端都通过 Schema 定义了所有可用的数据类型集合。</p>
+<h2 id="type-language">Type language</h2>
+<p>GraphQL 规范可以用任何编程语言实现，为了易于讨论 GraphQL Schema 的定义， 我们使用 "GraphQL schema language" 来描述 Schema 的定义。它类似于查询语句。</p>
+<h3 id="object-types-and-fields">Object types and fields</h3>
+<p>GraphQL Schema 最基本的组成是对象的定义，表示你可以从服务器获取的数据类型、对象的数据域： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">type Character &#123;</span><br><span class="line">    name: String!</span><br><span class="line">    appearIn:[Episode!]!</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上边的定义非常易读，解读如下（这样就可以统一我们对GraphQL Schema 的概念了）： - <code>Character</code> 是 <em>GraphQL 的对象类型</em> <em>（GraphQL Object Type）</em> ，表示这个类型包含一些其他数据域。 - <code>name</code> 和 <code>appearsIn</code> 是 <code>Character</code> 类型的数据域。它的意义是在任何对 <code>Character</code> 的查询中最多只能返回这两个数据域。 - <code>String</code> 是 GraphQL 内置的 <em>标量（scalar）</em> 类型。这些类型不再包含子数据域。 - <code>String!</code> 表示这个数据域 <em>不可为空（non-nullable）</em>, 服务端保证在任何请求中如果需要都会保证返回这个数据域。 - <code>[Episode!]!</code> 表述 <code>Episode</code> 数组，不可为空，并且数组中的每个元素也不可为空。</p>
+<h2 id="arguments">Arguments</h2>
+<p>GraphQL 对象的没个数据域都可以包含0到多个参数，比如： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">type Starship &#123;</span><br><span class="line">    id: ID!</span><br><span class="line">    name: String!</span><br><span class="line">    length(unit: LengthUnit = METER): Float</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 所有的参数必须有名字，并且传递参数时必须指定参数名。参数可以是必选或可选参数，对于可选参数需要定义参数默认值。</p>
+<h2 id="the-query-and-mutation-types">The Query and Mutation types</h2>
+<p>Schema中多数的类型定义都类似于普通对象，但是有两个类型是被特别处理的： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">schema &#123;</span><br><span class="line">    query： Query</span><br><span class="line">    mutation：Mutation</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> GraphQL 服务端必须包含 <code>query</code> 类型， <code>matation</code> 类型是可选的。他们与普通类型的定义一样，但是服务器端会特别处理它们，因为他们定义了查询操作的入口。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">query &#123;</span><br><span class="line">  hero &#123;</span><br><span class="line">    name</span><br><span class="line">  &#125;</span><br><span class="line">  droid(id: <span class="string">&quot;2000&quot;</span>) &#123;</span><br><span class="line">    name</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;hero&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;R2-D2&quot;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;droid&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;C-3PO&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果上边的 query 是可用的，那么就意味着服务器端在 <code>Query</code> 类型中定义了 <code>hero</code> 和 <code>droid</code> 两个数据域： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">type Query &#123;</span><br><span class="line">    hero(episode: Episode): Character</span><br><span class="line">    droid(id:ID!): Droid</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> Mutation 与 Query 类似。你需要定义 <code>Mutation</code> 类型中的数据域。 Mutation 和 Query 类型除了是 schema 的入口外，与其他类型的定义没有区别。</p>
+<h2 id="scalar-types">Scalar types</h2>
+<p>GraphQL 的对象类型至少包含了名字和数据域，优势这些数据域要被解析成一些基础类型。这就是 scalar 类型存在的原因：他们代表了查询的叶子节点（译注：个人理解类似Java中的基本数据类型）： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># query</span><br><span class="line">&#123;</span><br><span class="line">    hero &#123;</span><br><span class="line">        name</span><br><span class="line">        appearIn</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;hero&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;R2-Dd2&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;appearIn&quot;</span>: [</span><br><span class="line">                <span class="string">&quot;NEWHOPE&quot;</span>,</span><br><span class="line">                <span class="string">&quot;EMPIRE&quot;</span>,</span><br><span class="line">                <span class="string">&quot;JEDI&quot;</span></span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 之所以说 <code>name</code> 和 <code>appearIn</code> 是标量类型（scalar type），是因为 query 中他们就是叶子节点。 GraphQL 内置了默认的标量类型，可以直接使用： - <code>Int</code>: 32位有符号整数。 - <code>Float</code>：有符号双精度浮点值。 - <code>String</code>：UTF-8 字符串。 - <code>Boolean</code>：<code>true</code> 或 <code>false</code>。 - <code>ID</code>：表示唯一的标识符，通常用来做对象缓存的标识使用，本质与字符串一样，not hunman-readable。</p>
+<p>在多数的 GraphQL 服务端支持自定义标量类型。比如 <code>Date</code>： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scalar Date</span><br></pre></td></tr></table></figure> 接下来需要服务端来具体实现 <code>Date</code> 类型的序列化、反序列化和验证的方式。比如你可以指定 <code>Date</code> 类型序列化为整型的时间戳，客户端需要知道如何处理这个类型。</p>
+<h2 id="enumeration-types">Enumeration types</h2>
+<p>枚举类型也称为 <code>Enums</code>，是一类特别的标量，它的值限定在一些特定的值中。这允许你： 1. 验证此类型的参数都是可用的值 2. 在整个类型系统中明确某个数据域必须是某些特定值</p>
+<p>比如： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">enum Episode &#123;</span><br><span class="line">    NEWHOPE</span><br><span class="line">    EMPIre</span><br><span class="line">    JEDI</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 这表示任何时候你使用 <code>Episode</code> 类型对象的时候，它的值只能是 <code>NEWHOPE</code>、 <code>EMPIRE</code>、 <code>JEDI</code>中的一个。</p>
+<h2 id="lists-and-non-null">Lists and Non-Null</h2>
+<p>在 GraphQL 中只能定义对象（Object types）、标量（scalar）和枚举（enums）这三类数据类型。同时也定义了类型修饰符来协助你验证数据的值： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">type Character &#123;</span><br><span class="line">    name: String!</span><br><span class="line">    appearIn: [Episode]!</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 上边的例子，使用<code>!</code> 表示那么数据不可为空，如果出现空值会导致服务器内部错误，并应该通知客户端。</p>
+<p>非空修饰符还可以用于查询变量的定义，如果不满足，返回验证错误信息： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># query</span><br><span class="line">query DroidById($id:ID!) &#123;</span><br><span class="line">    droid(id:$id) &#123;</span><br><span class="line">        name</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"># variables</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;id&quot;</span>:<span class="literal">null</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;errors&quot;</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">&quot;message&quot;</span>: <span class="string">&quot;Variable \&quot;$id\&quot; of required type \&quot;ID!\&quot; was not provided.&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;locations&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;line&quot;</span>: <span class="number">1</span>,</span><br><span class="line">          <span class="attr">&quot;column&quot;</span>: <span class="number">17</span></span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>数组也是类似的，用方括号（List修饰符）标识数据的类型是 List,将会返回对象的数组。非空修饰符和List修饰符可以组合使用： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># List 本身可以为空，但 List 中的元素不可以为空</span><br><span class="line">myField: [String!]</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">myField: <span class="literal">null</span>                   <span class="comment">// valid</span></span><br><span class="line">myField:[]                      <span class="comment">// valid</span></span><br><span class="line">myField:[&#x27;a&#x27;, &#x27;b&#x27;]              <span class="comment">// valid</span></span><br><span class="line">myField:[&#x27;a&#x27;, <span class="literal">null</span>, &#x27;b&#x27;]        <span class="comment">// error</span></span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># List 本身不可空，List 中元素可为空</span><br><span class="line">myField: [String]!</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">myField: <span class="literal">null</span>                   <span class="comment">// error</span></span><br><span class="line">myField: []                     <span class="comment">// valid</span></span><br><span class="line">myField: [&#x27;a&#x27;, &#x27;b&#x27;]             <span class="comment">// valid</span></span><br><span class="line">myField: [&#x27;a&#x27;, <span class="literal">null</span>, &#x27;b&#x27;]       <span class="comment">// valid</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="interfaces">Interfaces</h2>
+<p>就像其他的类型系统，GraphQL 也支持接口类型。<em>接口（Interface）</em> 是一个抽象类型，它包含数据域的定义，所有继承它的类型都必须 包含这些数据域： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 定义 Character 接口表示任何角色</span><br><span class="line">interface Character &#123;</span><br><span class="line">    id: ID!</span><br><span class="line">    name: String!</span><br><span class="line">    friends: [Character]</span><br><span class="line">    appearsIn: [Episode]!</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>任何实现 <code>Character</code> 的类型都要包含这些数据域、参数和返回值类型： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># Character 的子类，必须包含 Character 类型的所有数据域，同时增加自己的数据域</span><br><span class="line">type Human implements Character &#123;</span><br><span class="line">    id: ID!</span><br><span class="line">    name: String!</span><br><span class="line">    friends: [Character]</span><br><span class="line">    appearsIn: [Episode]!</span><br><span class="line">    starships: [Starship]</span><br><span class="line">    totalCredits: Int</span><br><span class="line">&#125;</span><br><span class="line">type Droid implements Character &#123;</span><br><span class="line">    id: ID!</span><br><span class="line">    name: String!</span><br><span class="line">    friends: [Character]</span><br><span class="line">    appearsIn: [Episode]！</span><br><span class="line">    primaryFunction: String</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 注意下边的查询会导致错误： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">query HeroForEpisode($ep: Episode) &#123;</span><br><span class="line">    hero(episode: $ep) &#123;</span><br><span class="line">        name</span><br><span class="line">        primaryFunction</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"># variables</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;ep&quot;</span>: <span class="string">&quot;HEDI&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;errors&quot;</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">&quot;message&quot;</span>: <span class="string">&quot;Cannot query field \&quot;primaryFunction\&quot; on type \&quot;Character\&quot;. Did you mean to use an inline fragment on \&quot;Droid\&quot;?&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;locations&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;line&quot;</span>: <span class="number">4</span>,</span><br><span class="line">          <span class="attr">&quot;column&quot;</span>: <span class="number">5</span></span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 出错的原因是 hero 返回值类型是 <code>Character</code> ，根据 <code>episode</code> 参数的不同，可能是 <code>Human</code> 或 <code>Droid</code> 类型。但 <code>primaryFunction</code> 不是 <code>Character</code> 类型的数据域，所以会出错。你可以用内联（in-line）fragment 来实现目标： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">query HeroForEpisode($ep: Episode) &#123;</span><br><span class="line">    hero(episode: $ep)&#123;</span><br><span class="line">        name</span><br><span class="line">        ... on Droid &#123;</span><br><span class="line">            primaryFunction</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"># variables</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;ep&quot;</span>: <span class="string">&quot;JEDI&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;hero&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;R2-D2&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;primaryFunction&quot;</span>: <span class="string">&quot;Astromech&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="union-types">Union types</h2>
+<p>Union 与 接口类型类似，但是不能指定重复的数据类型。 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">union SearchResuld = Human | Droid | Starship</span><br></pre></td></tr></table></figure></p>
+<p>在返回 <code>SearchResult</code> 的时候，可能返回 <code>Human</code> <code>Droid</code> 或 <code>Starship</code> 类型。注意 union 的组成类型必须是具体的类型，不能是抽象类型（比如 interface）。在这种情况下，如果你的query可能返回这三种数据类型，那么你就需要额外的meta信息来区分返回的数据类型： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  search(text: <span class="string">&quot;an&quot;</span>) &#123;</span><br><span class="line">    __typename</span><br><span class="line">    ... on Character &#123;</span><br><span class="line">      name</span><br><span class="line">    &#125;</span><br><span class="line">    ... on Human &#123;</span><br><span class="line">      height</span><br><span class="line">    &#125;</span><br><span class="line">    ... on Droid &#123;</span><br><span class="line">      primaryFunction</span><br><span class="line">    &#125;</span><br><span class="line">    ... on Starship &#123;</span><br><span class="line">      name</span><br><span class="line">      length</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> Note that name is still specified on Starship because otherwise it wouldn't show up in the results given that Starship is not a Character!</p>
+<h2 id="input-types">Input types</h2>
+<p>到目前为止，我们只讨论了传递标量值（枚举、字符串）的情况。GraphQL 也支持同时传递复杂类型，尤其在 Mutation 操作中更有益处。在 GraphQL Schema 中，输入类型与其他类型一样，但是使用 input 关键字来定义： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 定义输入类型</span><br><span class="line">input ReviewInput &#123;</span><br><span class="line">    stars： Int！</span><br><span class="line">    commentary： String</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># 使用输入</span><br><span class="line">mutation CreateReviewForEpisode($ep:Episode, $review: ReviewInput) &#123;</span><br><span class="line">    createReview（episode:$ep, review:$review） &#123;</span><br><span class="line">        stars</span><br><span class="line">        commentary</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"># variables</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;ep&quot;</span>: <span class="string">&quot;JEDI&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;review&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;stars&quot;</span>: <span class="number">5</span>,</span><br><span class="line">        <span class="attr">&quot;commentary&quot;</span>: <span class="string">&quot;This is a great movie!&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;createReview&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;stars&quot;</span>: <span class="number">5</span>,</span><br><span class="line">      <span class="attr">&quot;commentary&quot;</span>: <span class="string">&quot;This is a great movie!&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> The fields on an input object type can themselves refer to input object types, but you can't mix input and output types in your schema. Input object types also can't have arguments on their fields.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/Graphql/" rel="tag"># Graphql</a>
+              <a href="/tags/Apollo-Android/" rel="tag"># Apollo-Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Graphql/HowToGraphql/" rel="prev" title="N 个小时入门 Graphql">
+      <i class="fa fa-chevron-left"></i> N 个小时入门 Graphql
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/uncategorized/dart_core_library_tour/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#type-system"><span class="nav-number">1.</span> <span class="nav-text">Type system</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type-language"><span class="nav-number">2.</span> <span class="nav-text">Type language</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#object-types-and-fields"><span class="nav-number">2.1.</span> <span class="nav-text">Object types and fields</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#arguments"><span class="nav-number">3.</span> <span class="nav-text">Arguments</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#the-query-and-mutation-types"><span class="nav-number">4.</span> <span class="nav-text">The Query and Mutation types</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#scalar-types"><span class="nav-number">5.</span> <span class="nav-text">Scalar types</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#enumeration-types"><span class="nav-number">6.</span> <span class="nav-text">Enumeration types</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lists-and-non-null"><span class="nav-number">7.</span> <span class="nav-text">Lists and Non-Null</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#interfaces"><span class="nav-number">8.</span> <span class="nav-text">Interfaces</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#union-types"><span class="nav-number">9.</span> <span class="nav-text">Union types</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#input-types"><span class="nav-number">10.</span> <span class="nav-text">Input types</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhang Yuzheng</p>
+  <div class="site-description" itemprop="description">码农日常</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">[object Object]</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

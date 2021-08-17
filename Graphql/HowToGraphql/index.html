@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.zhangyuzheng.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文是笔者学习 GraphQL 的笔记，参考了 GraphQL.org 的官方文档。本文仅做学习记录。  GraphQL 简介 Graphql 是一种面向 API 的查询语言，面向强类型数据查询的服务端运行环境。它不与任何数据库绑定，而是基于当前已有的数据、代码来支持它的运行。 GraphQL 服务需要定义数据类型和数据类型中的数据成员，并且为每个数据成员提供对应的数据处理函数： 1234567">
+<meta property="og:type" content="article">
+<meta property="og:title" content="N 个小时入门 Graphql">
+<meta property="og:url" content="https://www.zhangyuzheng.com/Graphql/HowToGraphql/index.html">
+<meta property="og:site_name" content="memorandums">
+<meta property="og:description" content="本文是笔者学习 GraphQL 的笔记，参考了 GraphQL.org 的官方文档。本文仅做学习记录。  GraphQL 简介 Graphql 是一种面向 API 的查询语言，面向强类型数据查询的服务端运行环境。它不与任何数据库绑定，而是基于当前已有的数据、代码来支持它的运行。 GraphQL 服务需要定义数据类型和数据类型中的数据成员，并且为每个数据成员提供对应的数据处理函数： 1234567">
+<meta property="og:locale">
+<meta property="article:published_time" content="2020-03-14T04:03:00.000Z">
+<meta property="article:modified_time" content="2021-08-14T03:53:53.474Z">
+<meta property="article:author" content="Zhang Yuzheng">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="Graphql">
+<meta property="article:tag" content="Apollo-Android">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.zhangyuzheng.com/Graphql/HowToGraphql/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>N 个小时入门 Graphql | memorandums</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="memorandums" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">memorandums</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">life notes</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://www.zhangyuzheng.com/Graphql/HowToGraphql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhang Yuzheng">
+      <meta itemprop="description" content="码农日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="memorandums">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          N 个小时入门 Graphql
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-14 12:03:00" itemprop="dateCreated datePublished" datetime="2020-03-14T12:03:00+08:00">2020-03-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-08-14 11:53:53" itemprop="dateModified" datetime="2021-08-14T11:53:53+08:00">2021-08-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Graphql/" itemprop="url" rel="index"><span itemprop="name">Graphql</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>本文是笔者学习 GraphQL 的笔记，参考了 GraphQL.org 的官方文档。本文仅做学习记录。</p>
+</blockquote>
+<h2 id="graphql-简介">GraphQL 简介</h2>
+<p>Graphql 是一种面向 API 的查询语言，面向强类型数据查询的服务端运行环境。它不与任何数据库绑定，而是基于当前已有的数据、代码来支持它的运行。</p>
+<p>GraphQL 服务需要定义数据类型和数据类型中的数据成员，并且为每个数据成员提供对应的数据处理函数： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># 类型定义</span><br><span class="line">type Query &#123;</span><br><span class="line">    me: User</span><br><span class="line">&#125;</span><br><span class="line">type User &#123;</span><br><span class="line">    id: ID</span><br><span class="line">    name: String</span><br><span class="line">&#125;</span><br><span class="line"># 数据处理函数</span><br><span class="line">function Query_me(request) &#123;</span><br><span class="line">    return request.auth.user;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function User_name(user) &#123;</span><br><span class="line">    return usere.getName()；</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>GraphQL 服务在运行的时候，能够接收 GraphQL 查询，验证并执行。它会首先检查这个查询只使用了已定义的数据域，然后运行数据处理函数返回结果。 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 查询</span></span><br><span class="line">&#123;</span><br><span class="line">    me &#123;</span><br><span class="line">        name</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 结果</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;me&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Luke Skywalker&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="queries-and-mutations">Queries and mutations</h2>
+<h3 id="fields">Fields</h3>
+<p>简化来说，GraphQL 的功能就是从对象中获取数据成员（field）。 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># Query JSON</span><br><span class="line">&#123;</span><br><span class="line">    # 这是 selection</span><br><span class="line">    hero &#123;</span><br><span class="line">        name</span><br><span class="line">        # 这是一个 sub-selection</span><br><span class="line">        friends &#123;</span><br><span class="line">            name</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;hero&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;R2-D2&quot;</span>,</span><br><span class="line">            # 注意这里返回的是列表类型</span><br><span class="line">            <span class="attr">&quot;friends&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Luke Skywalker&quot;</span></span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Hann Solo&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 可以直观的看出，查询的结果与查询本身包含相同的数据结构。</p>
+<h3 id="arguments">Arguments</h3>
+<p>在 GraphQL 中，你可以方便的传递参数，包括每个数据域、每个内嵌的数据对象都可以。甚至可以在服务端实现数据转换。 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 查询</span><br><span class="line">&#123;</span><br><span class="line">    human(id:<span class="string">&quot;1000&quot;</span>) &#123;</span><br><span class="line">        name</span><br><span class="line">        height(unit:FOOT)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 结果</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;human&quot;</span>: <span class="string">&quot;Luke Skywalker&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;height&quot;</span>: <span class="number">5.6430448</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="aliases">Aliases</h3>
+<p>在上边传递参数的例子中，你可以发现，同一个参数不能传递多个参数值。这就是使用 alias 的原因，他可以让你将结果的数据域重命名。在这个例子中，两个 <code>hero</code> 数据域会冲突，但是通过alias重命名，我们在同一个请求中就可以获取两份数据： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 译注：同一个query，但重命名了返回数据的名字</span><br><span class="line">&#123;</span><br><span class="line">    empireHero: hero(episode: EMPIRE) &#123;</span><br><span class="line">        name</span><br><span class="line">    &#125;</span><br><span class="line">    jediHero: hero(episode: JEDI) &#123;</span><br><span class="line">        name</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;empireHero&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Luke Skywalker&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;hediHero&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;R2-D2&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> ### Fragments GraphQL 的可重用模块称为 <em>fragments</em>。Fragment 可以让你构造一数据域的集合，然后再任何query需要的地方包含它： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># 两个 query 需要返回相同的数据</span><br><span class="line">&#123;</span><br><span class="line">    leftComparison: hero(episode: EMPIRE) &#123;</span><br><span class="line">        ...comparisonFields</span><br><span class="line">    &#125;</span><br><span class="line">    rightComparison: hero(episode: JEDI) &#123;</span><br><span class="line">        ...comparisonFields</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fragment comparisonFields on Character &#123;</span><br><span class="line">        name</span><br><span class="line">        appearsIn</span><br><span class="line">        friends &#123;</span><br><span class="line">            name</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;leftComparison&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Luke Skywalker&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;appearsIn&quot;</span>: [</span><br><span class="line">        <span class="string">&quot;NEWHOPE&quot;</span>,</span><br><span class="line">        <span class="string">&quot;EMPIRE&quot;</span>,</span><br><span class="line">        <span class="string">&quot;JEDI&quot;</span></span><br><span class="line">      ],</span><br><span class="line">      <span class="attr">&quot;friends&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Han Solo&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Leia Organa&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;C-3PO&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;R2-D2&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;rightComparison&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;R2-D2&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;appearsIn&quot;</span>: [</span><br><span class="line">        <span class="string">&quot;NEWHOPE&quot;</span>,</span><br><span class="line">        <span class="string">&quot;EMPIRE&quot;</span>,</span><br><span class="line">        <span class="string">&quot;JEDI&quot;</span></span><br><span class="line">      ],</span><br><span class="line">      <span class="attr">&quot;friends&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Luke Skywalker&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Han Solo&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Leia Organa&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> fragment 主要用于将复杂的数据分割成小块数据，让你的工程更加易于维护。 #### Using variables inside fragments <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">query HeroComparison($first: Int = <span class="number">3</span>) &#123;</span><br><span class="line">    leftComparison: hero(episode: EMPIRE) &#123;</span><br><span class="line">        ...comparisonFields</span><br><span class="line">    &#125;</span><br><span class="line">    rightComparison: hero(episode: EMPIRE) &#123;</span><br><span class="line">        ...comparisonFields</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fragment comparisonFields on Character &#123;</span><br><span class="line">        name</span><br><span class="line">        friendsConnection(first:$first) &#123;</span><br><span class="line">            totalCount</span><br><span class="line">            edges &#123;</span><br><span class="line">                node &#123;</span><br><span class="line">                    name</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;leftComparison&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Luke Skywalker&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;friendsConnection&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;totalCount&quot;</span>: <span class="number">4</span>,</span><br><span class="line">        <span class="attr">&quot;edges&quot;</span>: [</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">&quot;node&quot;</span>: &#123;</span><br><span class="line">              <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Han Solo&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">&quot;node&quot;</span>: &#123;</span><br><span class="line">              <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Leia Organa&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">&quot;node&quot;</span>: &#123;</span><br><span class="line">              <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;C-3PO&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;rightComparison&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;R2-D2&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;friendsConnection&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;totalCount&quot;</span>: <span class="number">3</span>,</span><br><span class="line">        <span class="attr">&quot;edges&quot;</span>: [</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">&quot;node&quot;</span>: &#123;</span><br><span class="line">              <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Luke Skywalker&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">&quot;node&quot;</span>: &#123;</span><br><span class="line">              <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Han Solo&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">&quot;node&quot;</span>: &#123;</span><br><span class="line">              <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Leia Organa&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> ## Operation name 在上边的例子中我们一直使用的都是简化的语法，省略了 <code>query</code> 关键字和 query的名字。在实际的项目中，最好加上它们，降低代码的歧义，增强可读性。 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 增加query关键字和query的名字</span><br><span class="line">query HeroNameAndFriends &#123;</span><br><span class="line">    hero &#123;</span><br><span class="line">        name</span><br><span class="line">        friends &#123;</span><br><span class="line">            name</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"># 返回值不变</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;hero&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;R2-D2&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;friends&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Luke Skywalker&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Han Solo&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Leia Organa&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 操作类型的关键字只有 <code>query</code>、<code>mutation</code>、<code>subscription</code>，说明你想要的操作类型。如果不使用简化的语法，操作类型关键是是必须的。</p>
+<p>操作的名字明确表示了操作的名字，在多个操作的文档中是必须的。但是我们建议尽量的使用操作的名字，有助于源码调试和服务器端的日志。</p>
+<h2 id="variables">Variables</h2>
+<p>在上边的实例中，我们都是用了静态的 query 语句，但是在实际的项目中，query 中会使用动态的变量。但是让客户端在运行时动态拼接query语句并不是什么好办法，所以在GraphQL 中提供了传递动态变量的方法。你只要做下面的三步操作即可： 1. 将 query 中的静态值替换为 <code>$variableName</code> 2. 声明 query 可以接受 <code>$variableName</code> 这个参数 3. 在指定的变量字典中传递 variableName:value 参数</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">query HeroNameAndFriends($episode: Episode) &#123;</span><br><span class="line">  hero(episode: $episode) &#123;</span><br><span class="line">    name</span><br><span class="line">    friends &#123;</span><br><span class="line">      name</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># variables字典</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;episode&quot;</span>: <span class="string">&quot;JEDI&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;hero&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;R2-D2&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;friends&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Luke Skywalker&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Han Solo&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Leia Organa&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="variable-definitions">Variable definitions</h3>
+<p>变量定义就是 <code>$</code>符号后跟变量名字和类型。比如上边例子中的 <code>$episode: Episode</code>。参数类型只能是标量、枚举或输入类型。如果在变量定义后增加 <code>!</code> 表示参数是必须的。</p>
+<h3 id="default-variables">Default variables</h3>
+<p>变量的默认值可以使用 <code>=</code> 指定。 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">query HeroNameAndFriends($episode: Episode = JEDI) &#123;</span><br><span class="line">  hero(episode: $episode) &#123;</span><br><span class="line">    name</span><br><span class="line">    friends &#123;</span><br><span class="line">      name</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="directives">Directives</h2>
+<p>在上一节文章中我们使用 variable 避免了开发中动态拼凑 query 语句。然而在实际开发过程中我们可能还需要动态的改变 query 的结构，并通过变量来控制query结构的变化。假设以下的情况：有一个UI组件，它包含一个简介界面和一个详细页面，详细页面包含更多的信息。那么我们可以构造以下的 query： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># query</span><br><span class="line">query Hero($episode: Episode, $withFriends: Boolean!) &#123;</span><br><span class="line">  hero(episode: $episode) &#123;</span><br><span class="line">    name</span><br><span class="line">    friends @include(if: $withFriends) &#123;</span><br><span class="line">      name</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"># variables</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;episode&quot;</span>: <span class="string">&quot;JEDI&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;withFriends&quot;</span>: <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 返回的数据</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;hero&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;R2-D2&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 在上边的query中，改变 <code>withFriends</code> 的值会改变 query 返回的结果的结构。</p>
+<p>这是 GraphQL 的一个特性，称为 <em>directive</em> 。它可以被应用于数据域和 fragment 中，它会影响服务端对query的执行。GraphQL 核心规范只包含以下两个指令，任何与规范兼容的服务器都要支持这两个指令（服务器端可以自定义增加指令）： - <code>@include(if: Boolean)</code> 只在参数为 <code>true</code> 的时候包含这个数据域 - <code>@skip(if: Boolean)</code> 在参数为 <code>true</code> 的时候省略这个数据域</p>
+<h2 id="mutations">Mutations</h2>
+<p>简单来说，query是从服务器获取数据，mutation 是向服务器发送数据。与 query 相同，mutation 也可以返回数据。这对于你获取数据更新后的状态很有用： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) &#123;</span><br><span class="line">  createReview(episode: $ep, review: $review) &#123;</span><br><span class="line">    stars</span><br><span class="line">    commentary</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"># variables</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;ep&quot;</span>: <span class="string">&quot;JEDI&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;review&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;stars&quot;</span>: <span class="number">5</span>,</span><br><span class="line">    <span class="attr">&quot;commentary&quot;</span>: <span class="string">&quot;This is a great movie!&quot;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;createReview&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;stars&quot;</span>: <span class="number">5</span>,</span><br><span class="line">      <span class="attr">&quot;commentary&quot;</span>: <span class="string">&quot;This is a great movie!&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="multiple-fields-in-mutations">Multiple fields in mutations</h3>
+<p>与query一样，一个query中可以包含多个数据域，一个 mutation 中也可以包含多个数据域。但是它们有一个不同点是 query 中的每个数据域都是并行执行的，而mutation中的多个数据域是串行依次执行的。只有前一个执行完成后下一个才能执行。</p>
+<h2 id="inline-fragments">Inline fragments</h2>
+<p>如果你的query返回的是接口或 union 类型，那么需要使用 <em>inline fragment</em> 来访问底层的数据，参考下边的例子： <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># query</span><br><span class="line">query HeroForEpisode($ep: Episode!) &#123;</span><br><span class="line">    hero(episode: $ep) &#123;</span><br><span class="line">        name</span><br><span class="line">        ... on Droid &#123;</span><br><span class="line">            primaryFunction</span><br><span class="line">        &#125;</span><br><span class="line">        ... on Human &#123;</span><br><span class="line">            height</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"># variables</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;ep&quot;</span>: <span class="string">&quot;HEDI&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;hero&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;R2-D2&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;primaryFunction&quot;</span>: <span class="string">&quot;Astromech&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 在上边的例子中，<code>hero</code> 数据域返回值类型是 <code>Character</code>。根据参数的类型，它可能是 <code>Human</code> 或 <code>Droid</code> 中的一个。在老的查询中，你只能要求返回 <code>Character</code> 中存在的数据，比如 <code>name</code>。</p>
+<p>为了请求底层具体的数据类型，你必须使用指定数据类型的 <code>inline fragment</code> 来实现。如果 <code>Character</code> 是 <code>Droid</code> 类型的，由于 <code>... on Droid</code> 的存在，会返回 <code>primaryFunction</code> 数据域；如果 <code>Character</code> 是 <code>Human类型</code>， 返回 <code>height</code> 数据域。</p>
+<p>有自己命名的 fragment 也可以这样使用，因为fragment 永远都是类型明确的。</p>
+<h3 id="meta-fields">Meta fields</h3>
+<p>假设某些情况下，你无法预知 GraphQL 服务器端返回的数据的类型，为了处理返回的数据，你需要在客户打断判断数据的类型。 GraphQL 允许请求 <code>__typename</code> 这个 meta field 来获取对象的类型。 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  search(text: <span class="string">&quot;an&quot;</span>) &#123;</span><br><span class="line">    __typename</span><br><span class="line">    ... on Human &#123;</span><br><span class="line">      name</span><br><span class="line">    &#125;</span><br><span class="line">    ... on Droid &#123;</span><br><span class="line">      name</span><br><span class="line">    &#125;</span><br><span class="line">    ... on Starship &#123;</span><br><span class="line">      name</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;search&quot;</span>: [</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">&quot;__typename&quot;</span>: <span class="string">&quot;Human&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Han Solo&quot;</span></span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">&quot;__typename&quot;</span>: <span class="string">&quot;Human&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Leia Organa&quot;</span></span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">&quot;__typename&quot;</span>: <span class="string">&quot;Starship&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;TIE Advanced x1&quot;</span></span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 上边的例子中， <code>search</code> 返回一个 union 类型，这个 union 可能是三种数据类型中的一种。那么客户端就无法在没有 <code>__typename</code> 的情况下区分返回的数据类型。</p>
+<p>GraphQL 服务提供一系列的 meta fields,参考 <a target="_blank" rel="noopener" href="https://graphql.org/learn/introspection/">Introspection System</a>。</p>
+<h2 id="graphql-vs-rest">GraphQL VS REST</h2>
+<table>
+<thead>
+<tr class="header">
+<th>项目</th>
+<th>GraphQL</th>
+<th>REST</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>参数传递</td>
+<td>每个数据域、内嵌对象都可以包含自己的参数，使一个GraphQL查询可以代替多个REST调用</td>
+<td>只能在URL、查询参数中传递低</td>
+</tr>
+</tbody>
+</table>
+<h2 id="参考">参考</h2>
+<p><a target="_blank" rel="noopener" href="https://www.howtographql.com/">HOW TO GRAPHQL</a></p>
+<p><a target="_blank" rel="noopener" href="https://graphql.org/learn/">GraphQL</a></p>
+<p>TO BE CONTINUED ...</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/Graphql/" rel="tag"># Graphql</a>
+              <a href="/tags/Apollo-Android/" rel="tag"># Apollo-Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E9%87%8D%E5%AD%A6Android/AndroidAppFundamentals/" rel="prev" title="Android 应用开发基础知识杂记">
+      <i class="fa fa-chevron-left"></i> Android 应用开发基础知识杂记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/Graphql/GraphQlSchemasAndTypes/" rel="next" title="GraphQL Schemas and Types">
+      GraphQL Schemas and Types <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#graphql-%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">GraphQL 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#queries-and-mutations"><span class="nav-number">2.</span> <span class="nav-text">Queries and mutations</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#fields"><span class="nav-number">2.1.</span> <span class="nav-text">Fields</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#arguments"><span class="nav-number">2.2.</span> <span class="nav-text">Arguments</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#aliases"><span class="nav-number">2.3.</span> <span class="nav-text">Aliases</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#variables"><span class="nav-number">3.</span> <span class="nav-text">Variables</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#variable-definitions"><span class="nav-number">3.1.</span> <span class="nav-text">Variable definitions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#default-variables"><span class="nav-number">3.2.</span> <span class="nav-text">Default variables</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#directives"><span class="nav-number">4.</span> <span class="nav-text">Directives</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mutations"><span class="nav-number">5.</span> <span class="nav-text">Mutations</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#multiple-fields-in-mutations"><span class="nav-number">5.1.</span> <span class="nav-text">Multiple fields in mutations</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#inline-fragments"><span class="nav-number">6.</span> <span class="nav-text">Inline fragments</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#meta-fields"><span class="nav-number">6.1.</span> <span class="nav-text">Meta fields</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#graphql-vs-rest"><span class="nav-number">7.</span> <span class="nav-text">GraphQL VS REST</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhang Yuzheng</p>
+  <div class="site-description" itemprop="description">码农日常</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">[object Object]</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.zhangyuzheng.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="A tour of the core libraries 原文参见 A tour of the core libraries 。 本文展示了 Dart 核心库的主要特性。本文只是概览，不保证连贯性。档需要了解某个类的更多信息，参考 Dart API reference 。 dart:core 内置类型、集合和其他核心功能。任何 Dart 程序都会自动导入此库。 dart:async 支持异步编程，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="memorandums">
+<meta property="og:url" content="https://www.zhangyuzheng.com/uncategorized/dart_core_library_tour/index.html">
+<meta property="og:site_name" content="memorandums">
+<meta property="og:description" content="A tour of the core libraries 原文参见 A tour of the core libraries 。 本文展示了 Dart 核心库的主要特性。本文只是概览，不保证连贯性。档需要了解某个类的更多信息，参考 Dart API reference 。 dart:core 内置类型、集合和其他核心功能。任何 Dart 程序都会自动导入此库。 dart:async 支持异步编程，">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-08-14T03:53:53.478Z">
+<meta property="article:modified_time" content="2021-08-14T03:53:53.478Z">
+<meta property="article:author" content="Zhang Yuzheng">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.zhangyuzheng.com/uncategorized/dart_core_library_tour/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title> | memorandums</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="memorandums" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">memorandums</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">life notes</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://www.zhangyuzheng.com/uncategorized/dart_core_library_tour/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhang Yuzheng">
+      <meta itemprop="description" content="码农日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="memorandums">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-08-14 11:53:53" itemprop="dateCreated datePublished" datetime="2021-08-14T11:53:53+08:00">2021-08-14</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="a-tour-of-the-core-libraries">A tour of the core libraries</h1>
+<p>原文参见 <a target="_blank" rel="noopener" href="https://dart.dev/guides/libraries/library-tour">A tour of the core libraries</a> 。</p>
+<p>本文展示了 Dart 核心库的主要特性。本文只是概览，不保证连贯性。档需要了解某个类的更多信息，参考 <a target="_blank" rel="noopener" href="https://api.dart.dev/stable">Dart API reference</a> 。</p>
+<p><a target="_blank" rel="noopener" href="https://dart.dev/guides/libraries/library-tour#dartcore---numbers-collections-strings-and-more">dart:core</a></p>
+<p>内置类型、集合和其他核心功能。任何 Dart 程序都会自动导入此库。</p>
+<p><a target="_blank" rel="noopener" href="https://dart.dev/guides/libraries/library-tour#dartasync---asynchronous-programming">dart:async</a></p>
+<p>支持异步编程，包含了 Future 和 Stream 等类。</p>
+<p><a target="_blank" rel="noopener" href="https://dart.dev/guides/libraries/library-tour#dartmath---math-and-random">dart:math</a></p>
+<p>数学运算功能和常量，再加上一个随机数生成器。</p>
+<p><a target="_blank" rel="noopener" href="https://dart.dev/guides/libraries/library-tour#dartconvert---decoding-and-encoding-json-utf-8-and-more">dart:convert</a></p>
+<p>包含了在不同的数据表示之间进行转换的编解码器，包含 JSON 和 UTF-8。</p>
+<p><a target="_blank" rel="noopener" href="https://dart.dev/guides/libraries/library-tour#darthtml">dart:html</a></p>
+<p>DOM 和其他基于浏览器 App 的 API 。</p>
+<p><a target="_blank" rel="noopener" href="https://dart.dev/guides/libraries/library-tour#dartio">dart:io</a></p>
+<p>使用 Dart 虚拟机的 I/O 程序，包含 Flutter、服务器和命令行脚本。</p>
+<p>本文只是概述，只包含了一些 dart:* 的库，不包含第三方库。</p>
+<p><a target="_blank" rel="noopener" href="https://pub.dev/">pub.dev</a> 和 <a target="_blank" rel="noopener" href="https://dart.dev/web/libraries">Dart web developer library guild</a> 包含了更多库的信息。 dart:* 库的 API 文档可以在 <a target="_blank" rel="noopener" href="https://api.dart.dev/stable">Dart API reference</a> , Flutter 的文档见 <a target="_blank" rel="noopener" href="https://api.flutter.dev/">Flutter API reference</a> 。</p>
+<h2 id="dartcore---numbers-collection-strings-and-more">dart:core - numbers, collection, strings, and more</h2>
+<p>dart:core 库体积很小，但是提供了 Dart 关键的内置功能。此库是自动导入每个 Dart 程序的。</p>
+<h3 id="printing-to-the-console">Printing to the console</h3>
+<p>顶层的 <code>print()</code> 方法只有一个参数（任意对象），它把对象的字符串的值（<code>toString()返回的字符串</code>）打印到终端。 <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(anObject);</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;I drink <span class="subst">$tea</span>&#x27;</span>);</span><br></pre></td></tr></table></figure> 关于字符串和 <code>toString()</code> 函数，参考 <a target="_blank" rel="noopener" href="https://dart.dev/guides/language/language-tour#strings">Strings</a></p>
+<h3 id="numbers">Numbers</h3>
+<p>dart:core 中定义了 num, int 和 double 类，包含了使用数字类型的一些基本工具。</p>
+<p>你可以调用 int 或 double 的 <code>parse()</code> 方法将字符串类型转换为整数或浮点数： <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">assert</span>(<span class="built_in">int</span>.parse(<span class="string">&#x27;42&#x27;</span>) == <span class="number">42</span>);</span><br><span class="line"><span class="keyword">assert</span>(<span class="built_in">int</span>.parse(<span class="string">&#x27;0x42&#x27;</span>) == <span class="number">66</span>);</span><br><span class="line"><span class="keyword">assert</span>(<span class="built_in">double</span>.parse(<span class="string">&#x27;0.50&#x27;</span>) == <span class="number">0.5</span>);</span><br></pre></td></tr></table></figure> 或者你可以使用 num 的 parse() 方法，它会尽可能的返回整数类型，否则会返回 double 类型： <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">assert</span>(<span class="built_in">num</span>.parse(<span class="string">&#x27;42&#x27;</span>) <span class="keyword">is</span> <span class="built_in">int</span>);</span><br><span class="line"><span class="keyword">assert</span>(<span class="built_in">num</span>.parse(<span class="string">&#x27;0x42&#x27;</span> <span class="keyword">is</span> <span class="built_in">int</span>));</span><br><span class="line"><span class="keyword">assert</span>(<span class="built_in">num</span>.parse(<span class="string">&#x27;0.50&#x27;</span>) <span class="keyword">is</span> <span class="built_in">double</span>);</span><br></pre></td></tr></table></figure> 可以使用 <code>radix</code> 参数指定整数的进制（译注：二进制，十六进制）: <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">assert</span>(<span class="built_in">int</span>.parse(<span class="string">&#x27;42&#x27;</span>, radix: <span class="number">16</span>) == <span class="number">66</span>);</span><br></pre></td></tr></table></figure> 是用 <code>toString()</code> 方法将整数或浮点数转换成字符串。使用 <a target="_blank" rel="noopener" href="https://api.dart.dev/stable/dart-core/num/toStringAsFixed.html">toStringAsFixed</a> 来指定小数点后数字的位数，使用 <a target="_blank" rel="noopener" href="https://api.dart.dev/stable/dart-core/num/toStringAsPrecision.html">toStringAsPrecision()</a> 来指定科学计数法的有效位数： <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将 int 转换为字符串</span></span><br><span class="line"><span class="keyword">assert</span>(<span class="number">42.</span>toString() == <span class="string">&#x27;42&#x27;</span>);</span><br><span class="line"><span class="comment">// 将 double 转换为字符串</span></span><br><span class="line"><span class="keyword">assert</span>(<span class="number">123.456</span>.toStringAsFixed(<span class="number">2</span>) == <span class="string">&#x27;123.46&#x27;</span>);</span><br><span class="line"><span class="comment">// 指定有效位数</span></span><br><span class="line"><span class="keyword">assert</span>(<span class="number">123.456</span>.toStringAsPrecision(<span class="number">2</span>) == <span class="string">&#x27;1.2e+2&#x27;</span>);</span><br><span class="line"><span class="keyword">assert</span>(<span class="built_in">double</span>.parse(<span class="string">&#x27;1.2e+2&#x27;</span>) == <span class="number">120.0</span>);</span><br></pre></td></tr></table></figure> 更多信息参考 API 文档， <a target="_blank" rel="noopener" href="https://api.dart.dev/stable/dart-core/int-class.html">int</a>，<a target="_blank" rel="noopener" href="https://api.dart.dev/stable/dart-core/double-class.html">double</a>, <a target="_blank" rel="noopener" href="https://api.dart.dev/stable/dart-core/num-class.html">num</a>, <a target="_blank" rel="noopener" href="https://dart.dev/guides/libraries/library-tour#dartmath---math-and-random">dart:math</a> 。</p>
+<h3 id="strings-and-regular-expressions">Strings and regular expressions</h3>
+<p>Dart 中的字符串就是不可修改的 UTF-16 码值序列。Dart 语言教程中有更多关于 <a target="_blank" rel="noopener" href="https://dart.dev/guides/language/language-tour#strings">strings</a> 的信息。你可以使用正则表达式（RegExp 对象）搜索字符串、做字符串替换。</p>
+<p>String 类定义了 <code>split()</code>, <code>contains()</code>, <code>startsWith()</code>, <code>endsWith()</code> 等方法。 #### Searching inside string 你可以在字符串中查找特定字符、确定是否以某个特定字符式样开始或结束： <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 检查字符串是否包含另一个字符串。</span></span><br><span class="line"><span class="keyword">assert</span>(<span class="string">&#x27;Never odd or even&#x27;</span>.contains(<span class="string">&#x27;odd&#x27;</span>));</span><br><span class="line"><span class="comment">// 是否以某一个字符串开始</span></span><br><span class="line"><span class="keyword">assert</span>(<span class="string">&#x27;Never odd or even&#x27;</span>.startsWith(<span class="string">&#x27;Never&#x27;</span>));</span><br><span class="line"><span class="comment">// 是否以某个字符串结尾</span></span><br><span class="line"><span class="keyword">assert</span>(<span class="string">&#x27;Never odd or even&#x27;</span>.endsWith(<span class="string">&#x27;odd&#x27;</span>));</span><br><span class="line"><span class="comment">// 查找子串的</span></span><br><span class="line"><span class="keyword">assert</span>(<span class="string">&#x27;Nevenr odd or even&#x27;</span>.indexOf(<span class="string">&#x27;odd&#x27;</span>) = <span class="number">6</span>);</span><br></pre></td></tr></table></figure> #### Extracting data from a string</p>
+<h2 id="dartasync---asynchronous-programming">dart:async - asynchronous programming</h2>
+<p>异步编程经常使用回调函数，但是 Dart 提供了其他备选方案：<a target="_blank" rel="noopener" href="https://api.dart.dev/stable/dart-async/Future-class.html">Future</a> 和 <a target="_blank" rel="noopener" href="https://api.dart.dev/stable/dart-async/Stream-class.html">Stream</a> 。一个 Future 就像一个在未来某个时间返回数据的一个承诺。 Stream 是获取数据序列的一种方式，比如事件。关于 Future、Stream 等的更多文档参考 <a target="_blank" rel="noopener" href="https://api.dart.dev/stable/dart-async/dart-async-library.html">dart:async API reference</a> 。 &gt; 很多时候你不需要自己直接使用 Future 和 Stream 的 API。Dart 语言支持使用 <code>async</code> 和 <code>await</code> 进行异步编程。参考 <a target="_blank" rel="noopener" href="https://dart.dev/codelabs/async-await">asynchronous programming codelab</a> 。</p>
+<p>dart:async 库支持 web 和 命令行应用，导入后即可使用： <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> dart:<span class="keyword">async</span>;</span><br></pre></td></tr></table></figure> ### Future 对 Future 的使用遍布 Dart 的各种多，经常作为异步方法的返回值。当一个 future 运行完成后，它的值就可以使用了。 #### Using await 在直接使用 Future API 之前，要先考虑是否可以使用 <code>await</code> 代替。因为使用 <code>await</code> 表达式比使用 Future 的代码更容易理解。</p>
+<p>看下边的代码。它使用了 Future 的 <code>then()</code> 方法来依次执行3个异步函数，等前一个执行完成后执行下一个。 <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">runUsinngFuture() &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    findEntryPoint().then((entryPoint) &#123;</span><br><span class="line">        <span class="keyword">return</span> runExecutable(entryPoint, args);</span><br><span class="line">    &#125;).then(flushThenExit);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 等效的 <code>await</code> 代码入下： <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">runUsingAsyncAwait() <span class="keyword">async</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">var</span> entryPoint = <span class="keyword">await</span> findEntryPoint();</span><br><span class="line">    <span class="keyword">var</span> exitCode = <span class="keyword">await</span> rumExecutable(entryPoint, args);</span><br><span class="line">    <span class="keyword">await</span> flushThenExit(exitCode);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <code>async</code> 函数可以处理 Future 的异常： <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> entryPoint = <span class="keyword">await</span> findEntryPoint();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> exitCode = <span class="keyword">await</span>  runExecutable(entryPoint, args);</span><br><span class="line">    <span class="keyword">await</span> flushThenExit(exitCode);</span><br><span class="line">&#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">    <span class="comment">// Handle the error...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> &gt; 异步方法返回值类型是 Future 。如果不希望函数返回 Future 对象，你必须使用其他解决方案。比如调用 <code>async</code> 函数。</p>
+<p>关于 <code>await</code> 的使用餐你考 <a target="_blank" rel="noopener" href="https://dart.dev/codelabs/async-await">asynchronous programming codelab</a> 。 #### Basic usage 使用 <code>then()</code> 来调度</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Graphql/GraphQlSchemasAndTypes/" rel="prev" title="GraphQL Schemas and Types">
+      <i class="fa fa-chevron-left"></i> GraphQL Schemas and Types
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#a-tour-of-the-core-libraries"><span class="nav-number">1.</span> <span class="nav-text">A tour of the core libraries</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#dartcore---numbers-collection-strings-and-more"><span class="nav-number">1.1.</span> <span class="nav-text">dart:core - numbers, collection, strings, and more</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#printing-to-the-console"><span class="nav-number">1.1.1.</span> <span class="nav-text">Printing to the console</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#numbers"><span class="nav-number">1.1.2.</span> <span class="nav-text">Numbers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#strings-and-regular-expressions"><span class="nav-number">1.1.3.</span> <span class="nav-text">Strings and regular expressions</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dartasync---asynchronous-programming"><span class="nav-number">1.2.</span> <span class="nav-text">dart:async - asynchronous programming</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhang Yuzheng</p>
+  <div class="site-description" itemprop="description">码农日常</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">[object Object]</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.zhangyuzheng.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文为原文不完整翻译以及学习笔记。 原文点这里。 TensorFlow Basic Usage 使用TensorFlow之前，你需要理解TensorFlow是如何：  使用图表示计算 在 Sessions 的上下文中执行图 使用 Tensor (张量)表示数据 使用 Variables (变量)维护状态的 在任意操作中使用 feeds 和 fetches 设置和获取数据  概述(Overview)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TensorFlow基本使用">
+<meta property="og:url" content="https://www.zhangyuzheng.com/TensorFlow/Tensorflow%20basic%20usage/index.html">
+<meta property="og:site_name" content="memorandums">
+<meta property="og:description" content="本文为原文不完整翻译以及学习笔记。 原文点这里。 TensorFlow Basic Usage 使用TensorFlow之前，你需要理解TensorFlow是如何：  使用图表示计算 在 Sessions 的上下文中执行图 使用 Tensor (张量)表示数据 使用 Variables (变量)维护状态的 在任意操作中使用 feeds 和 fetches 设置和获取数据  概述(Overview)">
+<meta property="og:locale">
+<meta property="article:published_time" content="2016-12-25T07:01:00.000Z">
+<meta property="article:modified_time" content="2021-08-14T03:53:53.478Z">
+<meta property="article:author" content="Zhang Yuzheng">
+<meta property="article:tag" content="TensorFlow">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.zhangyuzheng.com/TensorFlow/Tensorflow%20basic%20usage/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>TensorFlow基本使用 | memorandums</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="memorandums" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">memorandums</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">life notes</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://www.zhangyuzheng.com/TensorFlow/Tensorflow%20basic%20usage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhang Yuzheng">
+      <meta itemprop="description" content="码农日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="memorandums">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          TensorFlow基本使用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-12-25 15:01:00" itemprop="dateCreated datePublished" datetime="2016-12-25T15:01:00+08:00">2016-12-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-08-14 11:53:53" itemprop="dateModified" datetime="2021-08-14T11:53:53+08:00">2021-08-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TensorFlow/" itemprop="url" rel="index"><span itemprop="name">TensorFlow</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文为原文不完整翻译以及学习笔记。 <a target="_blank" rel="noopener" href="https://www.tensorflow.org/get_started/basic_usage">原文点这里。</a></p>
+<h1 id="tensorflow-basic-usage">TensorFlow Basic Usage</h1>
+<p>使用TensorFlow之前，你需要理解TensorFlow是如何：</p>
+<ul>
+<li>使用图表示计算</li>
+<li>在 <code>Sessions</code> 的上下文中执行图</li>
+<li>使用 <code>Tensor</code> (张量)表示数据</li>
+<li>使用 <code>Variables</code> (变量)维护状态的</li>
+<li>在任意操作中使用 <code>feeds</code> 和 <code>fetches</code> 设置和获取数据</li>
+</ul>
+<h2 id="概述overview">概述(Overview)</h2>
+<p>TensorFlow是一个使用图来表示计算的编程系统。图中的节点称为 <code>op</code>(译注: operations 的缩写)。<code>op</code> 的输入为0或多个 <code>Tensor</code>，进行计算，生成0或多个 <code>Tensor</code>。在TensorFlow的术语中，1个 <code>Tensor</code> 是一个包含类型约束的多维数组。例如你可以使用类似 <code>[batch, heigh, width, channels]</code> 的4维浮点数组表示一小批图片。</p>
+<p>1个TensorFlow图就是==对计算的描述==。进行任何计算之前，都必须先在一个 <code>Session</code> 中生成图。<code>Session</code> 负责把图中的操作（<code>op</code>）分配给 <code>Devices</code>（比如CPU、GPU），并且提供执行这些操作的方法。这些方法返回操作（译注：<code>ops</code>）产生的张量（译注：<code>Tensor</code>）（比如 <code>numpy</code> 中的<code>ndarray</code> Python对象，C/C++中 <code>tensorflow::Tensor</code>实例）。</p>
+<h2 id="计算图the-computation-graph">计算图(The computation graph)</h2>
+<p>TensorFlow程序一般结构上分为两个阶段：构造阶段，生成图；执行阶段，使用 session 来执行图中的操作。 比如，通常在构造阶段创建图来表示、训练神经网络，然后在执行阶段重复的执行图中的一系列训练操作。 TensorFlow支持C/C++和Python。目前，使用Python库来生成图相对来说更方便，因为Python的各种库包含大量的帮助函数，这是C/C++的库所没有的。 Session库对于三种语言都提供了相同的功能。</p>
+<h3 id="构造图building-the-graph">构造图(Building the graph)</h3>
+<p>我们可以利用无需输入的操作 <code>ops</code> （比如 <code>Constant</code>）来从最开始构造一个图（译注：<code>graph</code>），并把这些操作的输出传递给其他可以进行计算的操作 <code>ops</code>。 使用 Python 库提供的操作(<code>ops</code>) 构造函数返回构造好的操作(<code>ops</code>)对象。你可以把这些构造好的操作 (<code>ops</code>)作为输入传递给其他的操作(<code>ops</code>)构造函数。 TensorFlow 的 Python 库包含一个默认的图， 操作(<code>ops</code>) 构造函数生成的节点默认添加到其中。对于多数应用，这个默认的图已经足够。关于如何手动管理多个图参考 <a target="_blank" rel="noopener" href="https://www.tensorflow.org/api_docs/python/framework/core_graph_data_structures#Graph">Graph class</a>。 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建生成1*2矩阵的常量操作。</span></span><br><span class="line"><span class="comment"># 这个操作作为一个节点（译注：node）被添加到默认图中。</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># 构造器的返回值表示常量操作的输出。</span></span><br><span class="line">matrix1 = tf.constant([[<span class="number">3.</span>, <span class="number">3.</span>]])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建生成2*1矩阵的另一个常量。</span></span><br><span class="line">matrix2 = tf.constant([[<span class="number">2.</span>],[<span class="number">2.</span>]])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建Matmul操作，把 ‘matrix1’ 和 ‘matrix2’ 作为输入。</span></span><br><span class="line"><span class="comment"># 返回值 &#x27;product&#x27; 表示矩阵乘法的结果。</span></span><br><span class="line">product = tf.matmul(matrix1, matrix2)</span><br></pre></td></tr></table></figure> 现在默认的图包含了3个节点：两个 <code>contant()</code>操作和一个 <code>matmul()</code> 操作。为了实际进行矩阵乘法和获得乘法的结果，必须在 <code>session</code> 中启动图(<code>graph</code>)。</p>
+<h3 id="在-session-中运行图launching-the-graph-in-a-session">在 Session 中运行图(Launching the graph in a session)</h3>
+<p>在构造图之后就可以运行图了。运行图之前需要先创建 <code>Session</code> 对象。不需要参数的Session构造函数（译注：session constructor）就会运行默认图。 参考 <a target="_blank" rel="noopener" href="https://www.tensorflow.org/api_docs/python/client#session_management">Session class</a>查看完整的Session API文档。 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 启动默认图</span></span><br><span class="line">sess = tf.Session()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用session的run()函数并把 ‘product’（表示matmul操作的输出）作为传输传递给它来运行 matmul操作。</span></span><br><span class="line"><span class="comment"># 这表示我们想要 ‘matmul’ 操作的输出。</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># 操作所需的参数由 session 自动运算并传递。</span></span><br><span class="line"><span class="comment"># 通常这些运算是并行运行的。</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># 对 ‘run(product)’ 的调用使图中3个操作得以执行：2个常量和一个矩阵乘法。</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># 矩阵乘法的输出 ‘numpy’ 的 ‘ndarray’ 对象保存在 ‘result’ 中。</span></span><br><span class="line">result = sess.run(product)</span><br><span class="line"><span class="built_in">print</span>(result)</span><br><span class="line"><span class="comment"># ==&gt; [[ 12.]]</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 完工，关闭session。</span></span><br><span class="line">sess.close()</span><br></pre></td></tr></table></figure> 使用完后关闭 Session 释放资源。也可以用 <code>with</code> 语句块进入 <code>Session</code>中执行。<code>Session</code> 会在 <code>with</code> 代码块结束后自动关闭。 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">  result = sess.run([product])</span><br><span class="line">  <span class="built_in">print</span>(result)</span><br></pre></td></tr></table></figure> TensorFlow把图定义翻译成可被分配到计算资源（CPU、GPU）的可执行操作。一般来说你不需要指定CPU或GPU。TensorFlow会使用你的第一个GPU进行尽可能多的操作。 如果你的机器包含不止一个GPU，为了使用其他的GPU，你必须手动分配操作到指定GPU。使用 <code>with...Device</code> 语句来为操作指定CPU或GPU设备： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">  <span class="keyword">with</span> tf.device(<span class="string">&quot;/gpu:1&quot;</span>):</span><br><span class="line">    matrix1 = tf.constant([[<span class="number">3.</span>, <span class="number">3.</span>]])</span><br><span class="line">    matrix2 = tf.constant([[<span class="number">2.</span>],[<span class="number">2.</span>]])</span><br><span class="line">    product = tf.matmul(matrix1, matrix2)</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure> 设备是使用字符串指定。目前支持的设备包括：</p>
+<ul>
+<li><code>"/cpu:0"</code>：你机器的CPU。</li>
+<li><code>"/gpu:0"</code>：你机器的GPU。</li>
+<li><code>"/gpu:1"</code>：你机器的第二块GPU。</li>
+</ul>
+<p>参考<a target="_blank" rel="noopener" href="https://www.tensorflow.org/how_tos/using_gpu/index">Using GPUs</a>查看TensorFlow使用GPU的更多信息。</p>
+<h3 id="在分布式session中启动图launching-the-graph-in-a-distributed-session">在分布式Session中启动图(Launching the graph in a distributed session)</h3>
+<p>为了创建 TensorFlow 集群，需要在集群中的每台机器上都启动 TensorFlow 服务器。在客户机上初始化 <code>Session</code> 的时候，把集群中某个机器的网络地址传递给 <code>Session()</code> 函数： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> tf.Session(<span class="string">&quot;grpc://example.org:2222&quot;</span>) <span class="keyword">as</span> sess:</span><br><span class="line">  <span class="comment"># Calls to sess.run(...) will be executed on the cluster.</span></span><br><span class="line">  ...</span><br></pre></td></tr></table></figure> 这台机器就成为这个 session 的控制者（译注：master）。Master把图分配到集群中的其它机器上，与本地把图分配到本地计算资源非常类似。 你可以使用 <code>with tf.device()</code> 语句来为图的特定部分直接指定计算资源： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> tf.device(<span class="string">&quot;/job:ps/task:0&quot;</span>):</span><br><span class="line">  weights = tf.Variable(...)</span><br><span class="line">  biases = tf.Variable(...)</span><br></pre></td></tr></table></figure> 参考 <a target="_blank" rel="noopener" href="https://www.tensorflow.org/how_tos/distributed/">Distributed TensorFlow How To</a> 查看分布式 Session 和集群的更多信息。</p>
+<h2 id="交互式使用">交互式使用</h2>
+<p>上面Python的例子使用 <code>Session</code> 构造图，使用 <code>Session.run()</code> 来执行操作。 为了方便在交互式环境中使用TensorFlow，比如IPython，你可以使用 <code>InteractiveSession</code>类和 <code>Tensor.eval()</code> 和 <code>Operation.run()</code> 函数。这样可以避免使用变量来保存 session。 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Enter an interactive TensorFlow Session.</span></span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line">sess = tf.InteractiveSession()</span><br><span class="line"></span><br><span class="line">x = tf.Variable([<span class="number">1.0</span>, <span class="number">2.0</span>])</span><br><span class="line">a = tf.constant([<span class="number">3.0</span>, <span class="number">3.0</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># Initialize &#x27;x&#x27; using the run() method of its initializer op.</span></span><br><span class="line">x.initializer.run()</span><br><span class="line"></span><br><span class="line"><span class="comment"># Add an op to subtract &#x27;a&#x27; from &#x27;x&#x27;.  Run it and print the result</span></span><br><span class="line">sub = tf.sub(x, a)</span><br><span class="line"><span class="built_in">print</span>(sub.<span class="built_in">eval</span>())</span><br><span class="line"><span class="comment"># ==&gt; [-2. -1.]</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Close the Session when we&#x27;re done.</span></span><br><span class="line">sess.close()</span><br></pre></td></tr></table></figure></p>
+<h2 id="张量tensors">张量(Tensors)</h2>
+<p>TensorFlow 程序使用张量数据结构表示所有的数据，在计算图的操作中只能传递张量数据类型。你可以把TensorFlow中的张量想象成一个n维数组或队列。一个张量使用固定的类型、行和形状。参考 <a target="_blank" rel="noopener" href="https://www.tensorflow.org/resources/dims_types">Rank, Shape, and Type</a> 获取 TensorFlow 如何处理这些概念的信息。</p>
+<h2 id="变量variables">变量(Variables)</h2>
+<p>变量(Variables)在图的计算过程中维护状态。下面的例子展示作为计数器的变量。参考 <a target="_blank" rel="noopener" href="https://www.tensorflow.org/how_tos/variables/index">Variables</a> 了解更多细节。 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建一个变量，以后会被初始化为标量0。</span></span><br><span class="line">state = tf.Variable(<span class="number">0</span>, name=<span class="string">&quot;counter&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建一个操作，为 ‘state’ 增加1。</span></span><br><span class="line"></span><br><span class="line">one = tf.constant(<span class="number">1</span>)</span><br><span class="line">new_value = tf.add(state, one)</span><br><span class="line">update = tf.assign(state, new_value)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 必须在初始化图后运行 ‘init’ 操作才能初始化变量。</span></span><br><span class="line"><span class="comment"># 首先必须把 ‘init’ 操作添加到图中。</span></span><br><span class="line">init_op = tf.global_variables_initializer()</span><br><span class="line"></span><br><span class="line"><span class="comment"># Launch the graph and run the ops.</span></span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">  <span class="comment"># Run the &#x27;init&#x27; op</span></span><br><span class="line">  sess.run(init_op)</span><br><span class="line">  <span class="comment"># Print the initial value of &#x27;state&#x27;</span></span><br><span class="line">  <span class="built_in">print</span>(sess.run(state))</span><br><span class="line">  <span class="comment"># Run the op that updates &#x27;state&#x27; and print &#x27;state&#x27;.</span></span><br><span class="line">  <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>):</span><br><span class="line">    sess.run(update)</span><br><span class="line">    <span class="built_in">print</span>(sess.run(state))</span><br><span class="line"></span><br><span class="line"><span class="comment"># output:</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 0</span></span><br><span class="line"><span class="comment"># 1</span></span><br><span class="line"><span class="comment"># 2</span></span><br><span class="line"><span class="comment"># 3</span></span><br></pre></td></tr></table></figure> 上面代码中的 <code>assign()</code> 操作与 <code>add()</code> 操作一天都是是图表达式的一部分，直到 <code>run()</code> 函数运行它的时候才会实际执行这个赋值操作。 &gt;==译注：所有的操作(op)都在run()中执行，变量都在初始化的时候初始化，用来生成图。==</p>
+<p>典型的做法使用 <code>Variable</code> 的集合来表示静态模型的参数。例如，你应该把神经网络的权重参数作为张量保存在 <code>Variable</code>中。在训练过程中通过不断重复的训练这个图来更新这个张量。</p>
+<h2 id="fetches">Fetches</h2>
+<p>获取操作的输出，调用 <code>Session.run()</code> 方法，把希望获取的张量传递进来作为参数就可以。在上边的例子中我们获取了节点状态，我们还可以获取更多张量的值： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">input1 = tf.constant([<span class="number">3.0</span>])</span><br><span class="line">input2 = tf.constant([<span class="number">2.0</span>])</span><br><span class="line">input3 = tf.constant([<span class="number">5.0</span>])</span><br><span class="line">intermed = tf.add(input2, input3)</span><br><span class="line">mul = tf.mul(input1, intermed)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">  result = sess.run([mul, intermed])</span><br><span class="line">  <span class="built_in">print</span>(result)</span><br><span class="line"></span><br><span class="line"><span class="comment"># output:</span></span><br><span class="line"><span class="comment"># [array([ 21.], dtype=float32), array([ 7.], dtype=float32)]</span></span><br></pre></td></tr></table></figure> &gt; ==注意：所有需要产生请求结果的操作都只运行一次（译注：本例中intermed这个操作只运行了一次），而不是每次请求操作都运行一次。==</p>
+<h2 id="feeds">Feeds</h2>
+<p>上面所有例子中输入给计算图的张量都是使用 <code>Constants</code> 和 <code>Variables</code> 存储的。TensorFlow 同时提供 Feed(填充) ==（译注：feed，就是喂数据的意思）==机制来直接修改图中任何操作 <code>op</code> 的数据。 Feed 使用一个张量临时代替某个操作的输出。把填充数据作为参数传递给 <code>run()</code> 函数。填充数据仅仅用于当前传递的操作。最常见的例子就是使用 <code>tf.placeholder()</code> 来创建操作，并指定某个操作作为 Feed 操作。 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">input1 = tf.placeholder(tf.float32)</span><br><span class="line">input2 = tf.placeholder(tf.float32)</span><br><span class="line">output = tf.mul(input1, input2)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">  <span class="built_in">print</span>(sess.run([output], feed_dict=&#123;input1:[<span class="number">7.</span>], input2:[<span class="number">2.</span>]&#125;))</span><br><span class="line"></span><br><span class="line"><span class="comment"># output:</span></span><br><span class="line"><span class="comment"># [array([ 14.], dtype=float32)]</span></span><br></pre></td></tr></table></figure> 对于<code>placeholder()</code> 操作，如果不提供 Feed 运行时会产生错误。参考<a target="_blank" rel="noopener" href="https://www.tensorflow.org/tutorials/mnist/tf/index">MNIST fully-connected feed tutorial</a> 查看更多种子的例子。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/TensorFlow/" rel="tag"># TensorFlow</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Git/Git%20Submodules/" rel="prev" title="Git Submodules 学习笔记">
+      <i class="fa fa-chevron-left"></i> Git Submodules 学习笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/MachineLearning/LogisticRegression/" rel="next" title="逻辑回归">
+      逻辑回归 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#tensorflow-basic-usage"><span class="nav-number">1.</span> <span class="nav-text">TensorFlow Basic Usage</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0overview"><span class="nav-number">1.1.</span> <span class="nav-text">概述(Overview)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E5%9B%BEthe-computation-graph"><span class="nav-number">1.2.</span> <span class="nav-text">计算图(The computation graph)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%9B%BEbuilding-the-graph"><span class="nav-number">1.2.1.</span> <span class="nav-text">构造图(Building the graph)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8-session-%E4%B8%AD%E8%BF%90%E8%A1%8C%E5%9B%BElaunching-the-graph-in-a-session"><span class="nav-number">1.2.2.</span> <span class="nav-text">在 Session 中运行图(Launching the graph in a session)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8%E5%88%86%E5%B8%83%E5%BC%8Fsession%E4%B8%AD%E5%90%AF%E5%8A%A8%E5%9B%BElaunching-the-graph-in-a-distributed-session"><span class="nav-number">1.2.3.</span> <span class="nav-text">在分布式Session中启动图(Launching the graph in a distributed session)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%A4%E4%BA%92%E5%BC%8F%E4%BD%BF%E7%94%A8"><span class="nav-number">1.3.</span> <span class="nav-text">交互式使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%A0%E9%87%8Ftensors"><span class="nav-number">1.4.</span> <span class="nav-text">张量(Tensors)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E9%87%8Fvariables"><span class="nav-number">1.5.</span> <span class="nav-text">变量(Variables)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fetches"><span class="nav-number">1.6.</span> <span class="nav-text">Fetches</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#feeds"><span class="nav-number">1.7.</span> <span class="nav-text">Feeds</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhang Yuzheng</p>
+  <div class="site-description" itemprop="description">码农日常</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">[object Object]</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

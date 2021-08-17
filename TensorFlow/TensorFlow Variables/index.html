@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.zhangyuzheng.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Variables: Creation, Initialization, Saving, and Loading 在训练模型的过程中，我们使用 Variable 来保存和更新参数。Variable 是用来保存 Tensor1 的内存缓冲区，你必须明确声明它们。无论是在训练的过程中或者之后，你都可以把它们保存到磁盘中。之后你可以从磁盘读取之前保存的内容来继续训练或者分析模型。 本文使用了下面的类，打">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Variables:Creation, Initialization, Saving, and Loading">
+<meta property="og:url" content="https://www.zhangyuzheng.com/TensorFlow/TensorFlow%20Variables/index.html">
+<meta property="og:site_name" content="memorandums">
+<meta property="og:description" content="Variables: Creation, Initialization, Saving, and Loading 在训练模型的过程中，我们使用 Variable 来保存和更新参数。Variable 是用来保存 Tensor1 的内存缓冲区，你必须明确声明它们。无论是在训练的过程中或者之后，你都可以把它们保存到磁盘中。之后你可以从磁盘读取之前保存的内容来继续训练或者分析模型。 本文使用了下面的类，打">
+<meta property="og:locale">
+<meta property="article:published_time" content="2017-01-15T04:12:00.000Z">
+<meta property="article:modified_time" content="2021-08-14T03:53:53.478Z">
+<meta property="article:author" content="Zhang Yuzheng">
+<meta property="article:tag" content="TensorFlow">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.zhangyuzheng.com/TensorFlow/TensorFlow%20Variables/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>Variables:Creation, Initialization, Saving, and Loading | memorandums</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="memorandums" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">memorandums</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">life notes</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://www.zhangyuzheng.com/TensorFlow/TensorFlow%20Variables/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhang Yuzheng">
+      <meta itemprop="description" content="码农日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="memorandums">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Variables:Creation, Initialization, Saving, and Loading
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-01-15 12:12:00" itemprop="dateCreated datePublished" datetime="2017-01-15T12:12:00+08:00">2017-01-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-08-14 11:53:53" itemprop="dateModified" datetime="2021-08-14T11:53:53+08:00">2021-08-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TensorFlow/" itemprop="url" rel="index"><span itemprop="name">TensorFlow</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="variables-creation-initialization-saving-and-loading">Variables: Creation, Initialization, Saving, and Loading</h1>
+<p>在训练模型的过程中，我们使用 <code>Variable</code> 来保存和更新参数。<code>Variable</code> 是用来保存 Tensor<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> 的内存缓冲区，你必须明确声明它们。无论是在训练的过程中或者之后，你都可以把它们保存到磁盘中。之后你可以从磁盘读取之前保存的内容来继续训练或者分析模型。</p>
+<p>本文使用了下面的类，打开下面的链接查看详细文档：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.tensorflow.org/api_docs/python/state_ops/variables#Variable">tf.Variable</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.tensorflow.org/api_docs/python/state_ops/saving_and_restoring_variables#Saver">tf.train.Saver</a></li>
+</ul>
+<h2 id="creation">Creation</h2>
+<p>创建 Variable 时你需要给它的构造函数 <code>tf.Variable()</code> 传递一个 Tensor<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> 作为它的初始值。TensorFlow 提供了一系列使用常量或随机值来生成 Tensor 的操作。</p>
+<p>你要知道这些操作都需要你指定生成的 Tensor 的形状，这个形状就自动成为了生成的 Variable 的形状。一般 Variable 的形状都是固定的，但是 TensorFlow 提供了修改 Variable 形状的高级机制。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Create two variables.</span></span><br><span class="line">weights = tf.Variable(tf.random_normal([<span class="number">784</span>, <span class="number">200</span>], stddev=<span class="number">0.35</span>),</span><br><span class="line">                      name=<span class="string">&quot;weights&quot;</span>)</span><br><span class="line">biases = tf.Variable(tf.zeros([<span class="number">200</span>]), name=<span class="string">&quot;biases&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>通过调用 <code>tf.Variable()</code> 函数，你对图添加了如下操作：</p>
+<ul>
+<li>一个 <code>variable</code> 操作，用来保存变量的值。</li>
+<li>一个初始化操作，设置变量的初始值，实际上是使用 <code>tf.assign</code> 操作来实现的。</li>
+<li>把所有初始化操作都添加到图中，比如上面例子中 <code>biases</code> 的 <code>zeros</code> 操作。</li>
+</ul>
+<p><code>tf.Variable()</code> 的返回值是 Python 的 <code>tf.Variable</code> 类型的实例。</p>
+<h2 id="device-placement">Device placement</h2>
+<p>创建变量时，可以使用 <code>with tf.device(...):</code> 为变量分配特定的设备。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Pin a variable to CPU. 分配变量到CPU。</span></span><br><span class="line"><span class="keyword">with</span> tf.device(<span class="string">&quot;/cpu:0&quot;</span>):</span><br><span class="line">  v = tf.Variable(...)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Pin a variable to GPU.  分配变量到GPU。</span></span><br><span class="line"><span class="keyword">with</span> tf.device(<span class="string">&quot;/gpu:0&quot;</span>):</span><br><span class="line">  v = tf.Variable(...)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Pin a variable to a particular parameter server task. 分配变量到特定参数服务器任务。</span></span><br><span class="line"><span class="keyword">with</span> tf.device(<span class="string">&quot;/job:ps/task:7&quot;</span>):</span><br><span class="line">  v = tf.Variable(...)</span><br></pre></td></tr></table></figure>
+<p><strong>注意：</strong> 修改变量的操作(比如 <a target="_blank" rel="noopener" href="https://www.tensorflow.org/api_docs/python/state#Variable.assign"><code>v.assign()</code></a>)和 参数更新(比如  <a target="_blank" rel="noopener" href="https://www.tensorflow.org/api_docs/python/train/optimizers#Optimizer"><code>tf.train.Optimizer</code></a> ) 操作都必须与相应的变量运行在相同设备上，否则在创建这些操作时，错误的设备分配指令会被忽略掉。</p>
+<p>在设置重复的代码中，设备分配尤其重要。参考<a target="_blank" rel="noopener" href="https://www.tensorflow.org/api_docs/python/train/distributed_execution#replica_device_setter"><code>tf.train.replica_device_setter()</code></a> 查看详细信息。</p>
+<h2 id="initialization">Initialization</h2>
+<p>变量的初始化必须在你模型中任何其他操作运行之前明确(explicitly)的运行。最简单的办法就是增加一个初始化所有初始化函数的操作，并在你使用模型之前运行这个操作。</p>
+<p>你还可以选择重 checkpoint 文件中恢复变量，这一点后文会详细介绍。</p>
+<p>使用 <code>tf.global_variables_initializer()</code> 来增加运行初始化函数的操作，并在只在模型构造完成启动 Session 之后运行这个初始化操作。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Create two variables.</span></span><br><span class="line">weights = tf.Variable(tf.random_normal([<span class="number">784</span>, <span class="number">200</span>], stddev=<span class="number">0.35</span>),</span><br><span class="line">                      name=<span class="string">&quot;weights&quot;</span>)</span><br><span class="line">biases = tf.Variable(tf.zeros([<span class="number">200</span>]), name=<span class="string">&quot;biases&quot;</span>)</span><br><span class="line">...</span><br><span class="line"><span class="comment"># Add an op to initialize the variables.</span></span><br><span class="line">init_op = tf.global_variables_initializer()</span><br><span class="line"></span><br><span class="line"><span class="comment"># Later, when launching the model</span></span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">  <span class="comment"># Run the init operation.</span></span><br><span class="line">  sess.run(init_op)</span><br><span class="line">  ...</span><br><span class="line">  <span class="comment"># Use the model</span></span><br><span class="line">  ...</span><br></pre></td></tr></table></figure>
+<h3 id="initialization-from-another-variable">Initialization from another Variable</h3>
+<p>有时你需要使用一个变量来初始化另一个变量。由于 <code>tf.global_variables_initializer()</code> 添加的初始化操作是并行运行的，所以这时你要谨慎对待。</p>
+<p>你需要使用一个变量的 <code>initialized_value()</code> 属性来初始化另一个变量。你既可以直接使用变量的值也可以把变量的值与其他 Tensor 做运算后的值作为新变量的初始值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Create a variable with a random value.</span></span><br><span class="line">weights = tf.Variable(tf.random_normal([<span class="number">784</span>, <span class="number">200</span>], stddev=<span class="number">0.35</span>),</span><br><span class="line">                      name=<span class="string">&quot;weights&quot;</span>)</span><br><span class="line"><span class="comment"># Create another variable with the same value as &#x27;weights&#x27;.</span></span><br><span class="line">w2 = tf.Variable(weights.initialized_value(), name=<span class="string">&quot;w2&quot;</span>)</span><br><span class="line"><span class="comment"># Create another variable with twice the value of &#x27;weights&#x27;</span></span><br><span class="line">w_twice = tf.Variable(weights.initialized_value() * <span class="number">2.0</span>, name=<span class="string">&quot;w_twice&quot;</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="custom-initialization">Custom Initialization</h3>
+<p><code>tf.global_variables_initializer()</code> 这个方便的操作会向模型中增加初始化所有变量的操作。你也可以传递一个初始化列表来指定需要初始化的变量。参考<a target="_blank" rel="noopener" href="https://www.tensorflow.org/api_docs/python/state_ops">Variables Documentation</a>， 其中也包含了如何检查变量是否已经初始化过。</p>
+<h2 id="saving-and-restoring">Saving and Restoring</h2>
+<p>保存和回复模型最简单的方法就是使用 <code>tf.train.Saver</code> 对象。它的构造函数会为图中多有变脸或指定的变量增加 <code>save</code> 和 <code>restore</code> 操作。<code>Saver</code> 对象提供了执行这些操作以及指定 checkpoint 文件的方法。</p>
+<h3 id="checkpoint-files">Checkpoint Files</h3>
+<p>变量保存在二进制文件中，这个文件基本包含了从变量名字到对应 Tensor 的映射。</p>
+<p>创建 <code>Saver</code> 的时候，你可以指定需要存储的变量的名字，默认使用 <a target="_blank" rel="noopener" href="https://www.tensorflow.org/api_docs/python/state_ops/variables#Variable.name"><code>Variable.name</code></a> 作为变量的名字。</p>
+<p>你可以使用  <a target="_blank" rel="noopener" href="https://www.tensorflow.org/code/tensorflow/python/tools/inspect_checkpoint.py"><code>inspect_checkpoint</code></a> 库中的 <code>print_tensors_in_checkpoint_file</code> 来获取 checkpoint 文件中包含的变量信息。</p>
+<h3 id="saving-variables">Saving Variables</h3>
+<p>使用 <code>tf.train.Saver()</code> 创建 <code>Saver</code> 对象来管理模型中的所有变量。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Create some variables.</span></span><br><span class="line">v1 = tf.Variable(..., name=<span class="string">&quot;v1&quot;</span>)</span><br><span class="line">v2 = tf.Variable(..., name=<span class="string">&quot;v2&quot;</span>)</span><br><span class="line">...</span><br><span class="line"><span class="comment"># Add an op to initialize the variables.</span></span><br><span class="line">init_op = tf.global_variables_initializer()</span><br><span class="line"></span><br><span class="line"><span class="comment"># Add ops to save and restore all the variables.</span></span><br><span class="line">saver = tf.train.Saver()</span><br><span class="line"></span><br><span class="line"><span class="comment"># Later, launch the model, initialize the variables, do some work, save the</span></span><br><span class="line"><span class="comment"># variables to disk.</span></span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">  sess.run(init_op)</span><br><span class="line">  <span class="comment"># Do some work with the model.</span></span><br><span class="line">  ..</span><br><span class="line">  <span class="comment"># Save the variables to disk.</span></span><br><span class="line">  save_path = saver.save(sess, <span class="string">&quot;/tmp/model.ckpt&quot;</span>)</span><br><span class="line">  <span class="built_in">print</span>(<span class="string">&quot;Model saved in file: %s&quot;</span> % save_path)</span><br></pre></td></tr></table></figure>
+<h3 id="restoring-variables">Restoring Variables</h3>
+<p>使用同一个 <code>Saver</code> 对象来恢复变量。注意，从文件中恢复变量时，你不需要事前先初始化这些变量。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Create some variables.</span></span><br><span class="line">v1 = tf.Variable(..., name=<span class="string">&quot;v1&quot;</span>)</span><br><span class="line">v2 = tf.Variable(..., name=<span class="string">&quot;v2&quot;</span>)</span><br><span class="line">...</span><br><span class="line"><span class="comment"># Add ops to save and restore all the variables.</span></span><br><span class="line">saver = tf.train.Saver()</span><br><span class="line"></span><br><span class="line"><span class="comment"># Later, launch the model, use the saver to restore variables from disk, and</span></span><br><span class="line"><span class="comment"># do some work with the model.</span></span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">  <span class="comment"># Restore variables from disk.</span></span><br><span class="line">  saver.restore(sess, <span class="string">&quot;/tmp/model.ckpt&quot;</span>)</span><br><span class="line">  <span class="built_in">print</span>(<span class="string">&quot;Model restored.&quot;</span>)</span><br><span class="line">  <span class="comment"># Do some work with the model</span></span><br><span class="line">  ...</span><br></pre></td></tr></table></figure>
+<h3 id="choosing-which-variables-to-save-and-restore">Choosing which Variables to Save and Restore</h3>
+<p>如果你不向 <code>tf.train.Saver()</code> 传递任何参数，它会默认处理图中的所有变量。每个变量都保存在创建时指定的名字下。</p>
+<p>有时明确指定保存在 checkpoint 文件中变量的名字是非常有用的。比如你训练的模型中包含一个叫 <code>weights</code> 的变量，而你想把它恢复到叫做 <code>params</code> 的新变量中。</p>
+<p>在你只想保存和恢复现有变量的子集的时候页非常有用。比如你之前训练了一个五层的神经网络，现在你想训练一个六层的神经网络，那么你可以恢复之前训练好的的五层神经网络的参数到新模型的前五层。</p>
+<p>你还可以传递一个字典给 <code>tf.train.Saver()</code> 来指定需要保存的变量名字和变量，字典的 key 是名字，value 是变量。</p>
+<p>注意：</p>
+<ul>
+<li>你可以按需创建多个 <code>Saver</code> 对象，同一个变量可以被多个 <code>Saver</code> 操作，只有在调用 <code>saver.restore()</code> 的时候变量的值才会改变。</li>
+<li>如果你只在 Session 开始的时候恢复模型中的部分变量，那么你必须运行初始化操作来初始化其他的变量。参考 <a target="_blank" rel="noopener" href="https://www.tensorflow.org/api_docs/python/state_ops/exporting_and_importing_meta_graphs#initialize_variables"><code>tf.initialize_variables()</code></a> 。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Create some variables.</span></span><br><span class="line">v1 = tf.Variable(..., name=<span class="string">&quot;v1&quot;</span>)</span><br><span class="line">v2 = tf.Variable(..., name=<span class="string">&quot;v2&quot;</span>)</span><br><span class="line">...</span><br><span class="line"><span class="comment"># Add ops to save and restore only &#x27;v2&#x27; using the name &quot;my_v2&quot;</span></span><br><span class="line">saver = tf.train.Saver(&#123;<span class="string">&quot;my_v2&quot;</span>: v2&#125;)</span><br><span class="line"><span class="comment"># Use the saver object normally after that.</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<section class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p><a target="_blank" rel="noopener" href="https://www.wikiwand.com/zh-hans/%E5%BC%B5%E9%87%8F">张量</a><a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p><a target="_blank" rel="noopener" href="https://www.wikiwand.com/zh-hans/%E5%BC%B5%E9%87%8F">张量</a><a href="#fnref2" class="footnote-back">↩</a></p></li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/TensorFlow/" rel="tag"># TensorFlow</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Git/GitRemoveSubmodule/" rel="prev" title="Git 删除 Submodule">
+      <i class="fa fa-chevron-left"></i> Git 删除 Submodule
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/Dart/dart%E8%AF%AD%E8%A8%80%E4%B9%8B%E6%97%85/" rel="next" title="dart语言之旅">
+      dart语言之旅 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#variables-creation-initialization-saving-and-loading"><span class="nav-number">1.</span> <span class="nav-text">Variables: Creation, Initialization, Saving, and Loading</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#creation"><span class="nav-number">1.1.</span> <span class="nav-text">Creation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#device-placement"><span class="nav-number">1.2.</span> <span class="nav-text">Device placement</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#initialization"><span class="nav-number">1.3.</span> <span class="nav-text">Initialization</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#initialization-from-another-variable"><span class="nav-number">1.3.1.</span> <span class="nav-text">Initialization from another Variable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#custom-initialization"><span class="nav-number">1.3.2.</span> <span class="nav-text">Custom Initialization</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#saving-and-restoring"><span class="nav-number">1.4.</span> <span class="nav-text">Saving and Restoring</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#checkpoint-files"><span class="nav-number">1.4.1.</span> <span class="nav-text">Checkpoint Files</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#saving-variables"><span class="nav-number">1.4.2.</span> <span class="nav-text">Saving Variables</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#restoring-variables"><span class="nav-number">1.4.3.</span> <span class="nav-text">Restoring Variables</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#choosing-which-variables-to-save-and-restore"><span class="nav-number">1.4.4.</span> <span class="nav-text">Choosing which Variables to Save and Restore</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhang Yuzheng</p>
+  <div class="site-description" itemprop="description">码农日常</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">[object Object]</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

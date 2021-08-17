@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.zhangyuzheng.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Pelican 入门 http:&#x2F;&#x2F;docs.getpelican.com&#x2F;en&#x2F;stable&#x2F;index.html Pelican 安装 pip install pelican markdown typogrify beautifulsoup4 安装 typogrify 和 beautifulsoup4是为了后面使用 render_math 插件生成数学公式使用。 &gt; 后来发现 rende">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pelican 入门">
+<meta property="og:url" content="https://www.zhangyuzheng.com/Pelican/PelicanIntroduction/index.html">
+<meta property="og:site_name" content="memorandums">
+<meta property="og:description" content="Pelican 入门 http:&#x2F;&#x2F;docs.getpelican.com&#x2F;en&#x2F;stable&#x2F;index.html Pelican 安装 pip install pelican markdown typogrify beautifulsoup4 安装 typogrify 和 beautifulsoup4是为了后面使用 render_math 插件生成数学公式使用。 &gt; 后来发现 rende">
+<meta property="og:locale">
+<meta property="article:published_time" content="2016-12-18T03:58:00.000Z">
+<meta property="article:modified_time" content="2021-08-14T03:53:53.478Z">
+<meta property="article:author" content="Zhang Yuzheng">
+<meta property="article:tag" content="Pelican">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.zhangyuzheng.com/Pelican/PelicanIntroduction/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>Pelican 入门 | memorandums</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="memorandums" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">memorandums</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">life notes</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://www.zhangyuzheng.com/Pelican/PelicanIntroduction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhang Yuzheng">
+      <meta itemprop="description" content="码农日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="memorandums">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Pelican 入门
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-12-18 11:58:00" itemprop="dateCreated datePublished" datetime="2016-12-18T11:58:00+08:00">2016-12-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-08-14 11:53:53" itemprop="dateModified" datetime="2021-08-14T11:53:53+08:00">2021-08-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Pelican/" itemprop="url" rel="index"><span itemprop="name">Pelican</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="pelican-入门">Pelican 入门</h1>
+<p><a target="_blank" rel="noopener" href="http://docs.getpelican.com/en/stable/index.html">http://docs.getpelican.com/en/stable/index.html</a></p>
+<h2 id="pelican-安装">Pelican 安装</h2>
+<p><code>pip install pelican markdown typogrify beautifulsoup4</code> 安装 <code>typogrify</code> 和 <code>beautifulsoup4</code>是为了后面使用 <code>render_math</code> 插件生成数学公式使用。 &gt; 后来发现 <code>render_math</code> 在最新版本的 Pelican 不工作。需要使用 <code>python-markdown-math</code> 来帮助实现。</p>
+<p><code>pip install python-markdown-math</code> <a target="_blank" rel="noopener" href="https://github.com/mitya57/python-markdown-math">参考</a></p>
+<p><code>pip install ghp-import</code> 用于发布网页到github。</p>
+<h2 id="使用pelican-quickstart快速生成网站框架">使用pelican-quickstart快速生成网站框架</h2>
+<p>运行pelican-quickstart命令快速交互式创建网站框架。 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$ pelican-quickstart </span><br><span class="line">Welcome to pelican-quickstart v3.7.0.</span><br><span class="line"></span><br><span class="line">This script will <span class="built_in">help</span> you create a new Pelican-based website.</span><br><span class="line"></span><br><span class="line">Please answer the following questions so this script can generate the files</span><br><span class="line">needed by Pelican.</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">&gt; Where <span class="keyword">do</span> you want to create your new web site? [.] </span><br><span class="line">&gt; What will be the title of this web site? Running Out of Memory   </span><br><span class="line">&gt; Who will be the author of this web site? Zhang Yuz</span><br><span class="line">&gt; What will be the default language of this web site? [en] zh</span><br><span class="line">&gt; Do you want to specify a URL prefix? e.g., http://example.com   (Y/n) </span><br><span class="line">&gt; What is your URL prefix? (see above example; no trailing slash) https://zhangyuz.github.io </span><br><span class="line">&gt; Do you want to <span class="built_in">enable</span> article pagination? (Y/n) </span><br><span class="line">&gt; How many articles per page <span class="keyword">do</span> you want? [10] 8</span><br><span class="line">&gt; What is your time zone? [Europe/Paris] Asia/Shanghai</span><br><span class="line">&gt; Do you want to generate a Fabfile/Makefile to automate generation and publishing? (Y/n) </span><br><span class="line">&gt; Do you want an auto-reload &amp; simpleHTTP script to assist with theme and site development? (Y/n) </span><br><span class="line">&gt; Do you want to upload your website using FTP? (y/N) </span><br><span class="line">&gt; Do you want to upload your website using SSH? (y/N) </span><br><span class="line">&gt; Do you want to upload your website using Dropbox? (y/N) </span><br><span class="line">&gt; Do you want to upload your website using S3? (y/N) </span><br><span class="line">&gt; Do you want to upload your website using Rackspace Cloud Files? (y/N) </span><br><span class="line">&gt; Do you want to upload your website using GitHub Pages? (y/N) y</span><br><span class="line">&gt; Is this your personal page (username.github.io)? (y/N) </span><br><span class="line">Done. Your new project is available at /home/yuz/YuZ/zhangyuz.github.io/running-out-of-memory</span><br></pre></td></tr></table></figure></p>
+<h2 id="编写内容">编写内容</h2>
+<h3 id="文章与页面">文章与页面</h3>
+<p>Pelican把文章（articles）看做时间连续的内容，比如发布一篇blog，因此它和某个日期是相关的。 页面(pages)背后的意义是这样的：他们通常不是短期存在的，目的是保存那些不经常改变的内容（比如：About页面、Contact页面）。 ### 文件元信息（File metadata）</p>
+<p>Pelican想尽可能只能的从你的文件系统（译注：此处文件系统是指文件，比如目录的名字）获取它需要的信息（比如，你文章的类别），但是你还是需要在你文件的内部以元信息的形式提供文章信息。 &gt;我本人使用 markdown 写作，所以下面只涉及 markdown 和 HTML 语法的元信息写法</p>
+<p>使用 Markdown 写作的元信息语法： <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Title: My super title</span><br><span class="line">Date: 2010-12-03 10:20</span><br><span class="line">Modified: 2010-12-05 19:30</span><br><span class="line">Category: Python</span><br><span class="line">Tags: pelican, publishing</span><br><span class="line">Slug: my-super-post</span><br><span class="line">Authors: Alexis Metaireau, Conan Doyle</span><br><span class="line">Summary: Short version for index and feeds</span><br><span class="line"></span><br><span class="line">This is the content of my super blog post.</span><br></pre></td></tr></table></figure></p>
+<p>使用HTML编写的元信息语法： <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">title</span>&gt;</span>My super title<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">&quot;tags&quot;</span> <span class="attr">content</span>=<span class="string">&quot;thats, awesome&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">&quot;date&quot;</span> <span class="attr">content</span>=<span class="string">&quot;2012-07-09 22:28&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">&quot;modified&quot;</span> <span class="attr">content</span>=<span class="string">&quot;2012-07-10 20:14&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">&quot;category&quot;</span> <span class="attr">content</span>=<span class="string">&quot;yeah&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">&quot;authors&quot;</span> <span class="attr">content</span>=<span class="string">&quot;Alexis Métaireau, Conan Doyle&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">&quot;summary&quot;</span> <span class="attr">content</span>=<span class="string">&quot;Short version for index and feeds&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        This is the content of my super blog post.</span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>除了文章标题（title）以外的元信息都是可选的：如果没有指定日期（Date）并且 <code>DEFAULT_DATE</code>设置为 <code>fs</code> ，Pelican 就使用这个文件的 mtime 属性作为日期。文章的分类（Category）可以使用包含文章的目录来确定。如果你使用其他的方式组织你的文章目录结构，目录的名字不适合作为分类的名字，你可以设置 <code>USE_FOLDER_AS_CATEGORY</code> 为 <code>False</code> 。在解析元信息中的日期（Date）时，Pelican 支持的是 W3C 的 <a target="_blank" rel="noopener" href="https://www.w3.org/TR/NOTE-datetime">ISO8601</a> 。</p>
+<blockquote>
+<p>在试验不同的设置（尤其涉及到元信息）时，缓存可能影响是修改使修改无法生效。在这种情况下，可以设置 <code>LOAD_CONTENT_CACHE = False</code> 来禁用缓存或者使用 <code>--ignore-cache</code> 命令行开关。</p>
+</blockquote>
+<p>modified 应该是你最后更新文章的时间，如果不指定，默认设为 date。除了在模板中显示 modified　时间以外，如果把 modified时间设置为当前时间，rss/atom订阅中文章的时间也会自动更新（译注：订阅者也会收到更新提醒）。</p>
+<p>authors 是逗号分割的文章作者列表。如果只有一位作者，你可以使用 author 代替 authors。</p>
+<p>如果不指定 summary 信息，<code>SUMMARY_MAX_LENGTH</code> 设置用来指定默认使用文章起始多少字作为文章的 summary。</p>
+<p>你可以使用 <code>FILENAME_METADATA</code> 设置正则表达式，从文件名字中抽取出任何文章的元信息。任何符合正则表达式的命名字段都会被设置到元信息对象中。<code>FILENAME_METADATA</code> 的默认值仅仅从文件名字中获取<code>date</code>信息。例如，如果你想从文件名字中抽取 <code>date</code> 和 <code>slug</code>， 你可能需要把 <code>FILENAME_METADATA</code> 设置成 <code>'(?P&lt;date&gt;\d&#123;4&#125;-\d&#123;2&#125;-\d&#123;2&#125;)_(?P&lt;slug&gt;.*)'</code></p>
+<p>注意，你文中设置的元信息比从文件名字中抽取的元信息优先级更高，会被优先使用。</p>
+<h3 id="页面pages">页面（Pages）</h3>
+<p>如果在 <code>content</code>　目录下创建名为 <code>pages</code>　的目录，其中的所有文件都会被用来创建静态页面，比如 <code>About</code>、<code>Contact</code>页面。</p>
+<p>使用 <code>DISPLAY_PAGES_ON_MENU</code> 设置来控制是否所有静态页面都显示在导航菜单中（默认为 <code>True</code>）。</p>
+<p>如果希望设置某个文件既无法被链接到也不在导航菜单中显示，可以在文中元信息增加 <code>status: hidden</code> 属性。这个属性在制作错误页的时候比较有用。</p>
+<h3 id="内部资源链接">内部资源链接</h3>
+<p>使用 <code>&#123;filename&#125;path/to/file</code> 来链接内部内容（==<strong>译注：指的是 <code>content</code> 目录中的内容</strong>==）。注意前面的<code>/</code> 是 <code>&#123;filename&#125;</code> 指令的所必须的分隔符。（译注：这里的内容指的你写作的文章，rst或md文件等）</p>
+<p>例如，你的Pelican项目结构如下： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">website/</span><br><span class="line">├── content</span><br><span class="line">│   ├── category/</span><br><span class="line">│   │   └── article1.rst</span><br><span class="line">│   ├── article2.md</span><br><span class="line">│   └── pages</span><br><span class="line">│       └── about.md</span><br><span class="line">└── pelican.conf.py</span><br></pre></td></tr></table></figure></p>
+<p><code>article1.rst</code> 中的内容可能如下： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">The first article</span><br><span class="line">#################</span><br><span class="line"></span><br><span class="line">:date: 2012-12-01 10:02</span><br><span class="line"></span><br><span class="line">See below intra-site link examples in reStructuredText format.</span><br><span class="line"></span><br><span class="line">`a link relative to the current file &lt;&#123;filename&#125;../article2.md&gt;`_</span><br><span class="line">`a link relative to the content root &lt;&#123;filename&#125;/article2.md&gt;`_</span><br></pre></td></tr></table></figure></p>
+<p><code>article2.md</code> 中的内容： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Title: The second article</span><br><span class="line">Date: 2012-12-01 10:02</span><br><span class="line"></span><br><span class="line">See below intra-site link examples in Markdown format.</span><br><span class="line"></span><br><span class="line">[a link relative to the current file](&#123;filename&#125;category/article1.rst)</span><br><span class="line">[a link relative to the content root](&#123;filename&#125;/category/article1.rst)</span><br></pre></td></tr></table></figure> ==<strong>（译注：注意上面路径中相对于当前文件和相对于 <code>content</code> 目录文件路径的不同写法。）</strong>==</p>
+<h4 id="静态文件链接">静态文件链接</h4>
+<p>链接到非文章、非页面内容液使用前文提到的 <code>&#123;filename&#125;</code> 语法。重点是除非包含这些文件的目录被包含在项目配置文件 <code>pelicanconf.py</code> 的 <code>STATIC_PATHS</code>设置中，否则这些文件是不会自动被复制到 <code>output</code> 目录的。Pelican的默认设置包含 <code>images</code> 目录，但是其他目录必须手动添加。忘记添加设置将会导致链接无效。</p>
+<p>例如，你项目的 content 目录结构如下： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">content</span><br><span class="line">├── images</span><br><span class="line">│   └── han.jpg</span><br><span class="line">├── pdfs</span><br><span class="line">│   └── menu.pdf</span><br><span class="line">└── pages</span><br><span class="line">    └── test.md</span><br></pre></td></tr></table></figure></p>
+<p><code>test.md</code> 可能写作如下： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">![Alt Text](&#123;filename&#125;/images/han.jpg)</span><br><span class="line">[Our Menu](&#123;filename&#125;/pdfs/menu.pdf)</span><br></pre></td></tr></table></figure></p>
+<p><code>pelicanconf.py</code> 应该包含如下内容： <code>STATIC_PATHS = ['images', 'pdfs']</code></p>
+<p>网站生成过程中，会把<code>han.jpg</code> 复制到 <code>output/images/han.jpg</code>， <code>menu.pdf</code> 复制到 <code>out/pdfs/mnu.pdf</code>, 并根据test.md生成合适的链接。</p>
+<h4 id="在同一个目录中混合内容mixed-content-in-the-same-directory">在同一个目录中混合内容（Mixed content in the same directory）</h4>
+<p>从 Pelican3.5 开始，静态文件和页面源码文件可以放在相同的目录中，无需担心会在生成的站点中暴漏源码。对于这种混合的目录，必须同时添加到 <code>STATIC_PATHS</code>和 <code>PAGE_PATHS</code>（或者 <code>STATIC_PATHS</code> 和 <code>ARTICLE_PATHS</code>），这样 Pelican 就可以正常处理其中的页面源码并且复制其他文件（就像他们在独立的目录中一样）。</p>
+<p>注意：把静态文件和源码内容放在相同的目录并不能保证它们在生成的站点中仍然位于同一个目录。为了达到这样的效果，最简单的方法是使用 <code>attach</code>语法。作为一种选择， <code>STATIC_SAVE_AS</code>、<code>PAGE_SAVE_AS</code> 和 <code>ARTICLE_SAVE_AS</code> （连同相应的 <code>*_URL</code> 设置）这些设置实现把不同类型的内容放在相同的目录中的目的，这个与 Pelican 之前的版本是一致的。</p>
+<h4 id="附件静态文件attaching-static-files">附件静态文件（Attaching static files）</h4>
+<p>从 Pelican3.5开始，使用 <code>&#123;attach&#125;path/to/file</code> 语法可以（attached）静态文件到静态页面或文章中。这和 <code>&#123;fileneme&#125;</code> 语法效果类似，但是同时会把静态文件重定位到链接文件的输出目录。如果被链接的文件位于使用链接的文件的目录的下级目录中，那么也会在输出目录中保持相同的目录结构；否则，静态文件会被放到与链接它的文件相同的目录。</p>
+<p>本语法仅适用于静态文件，并且他们位于 <code>STATIC_PATHS</code> 所设置的目录中。</p>
+<p>例如，某个项目的 content 目录结构如下： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">content</span><br><span class="line">├── blog</span><br><span class="line">│   ├── icons</span><br><span class="line">│   │   └── icon.png</span><br><span class="line">│   ├── photo.jpg</span><br><span class="line">│   └── testpost.md</span><br><span class="line">└── downloads</span><br><span class="line">    └── archive.zip</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>`pelicanconf.py‘ 应该包含如下内容： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">PATH = &#x27;content&#x27;</span><br><span class="line">STATIC_PATHS = [&#x27;blog&#x27;, &#x27;downloads&#x27;]</span><br><span class="line">ARTICLE_PATHS = [&#x27;blog&#x27;]</span><br><span class="line">ARTICLE_SAVE_AS = &#x27;&#123;date:%Y&#125;/&#123;slug&#125;.html&#x27;</span><br><span class="line">ARTICLE_URL = &#x27;&#123;date:%Y&#125;/&#123;slug&#125;.html&#x27;</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p><code>testpost.md</code> 写作： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Title: Test Post</span><br><span class="line">Category: test</span><br><span class="line">Date: 2014-10-31</span><br><span class="line"></span><br><span class="line">![Icon](&#123;attach&#125;icons/icon.png)</span><br><span class="line">![Photo](&#123;attach&#125;photo.jpg)</span><br><span class="line">[Downloadable File](&#123;attach&#125;/downloads/archive.zip)</span><br></pre></td></tr></table></figure></p>
+<p>那么生成的输出目录结构如下： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">output</span><br><span class="line">└── 2014</span><br><span class="line">    ├── archive.zip</span><br><span class="line">    ├── icons</span><br><span class="line">    │   └── icon.png</span><br><span class="line">    ├── photo.jpg</span><br><span class="line">    └── test-post.html</span><br></pre></td></tr></table></figure></p>
+<p>对于比链接多次的静态文件，<code>&#123;attach&#125;</code> 只在第一次处理到它时生效一次，之后把它与 <code>&#123;filename&#125;</code> 做相同的处理。这样可以避免破坏已经存在的链接。</p>
+<p>多个链接到同一个文件要格外注意：因为 Pelican在第一次处理 <code>&#123;attach&#125;</code> 标签的时候确定这个被链接文件重定位的为止，但是 Pelican 不保证每次处理文件的顺序都是相同的，所以多个链接到相同的静态文件可能在不同的编译结果中的位置也不一样（这个问题的出现和你的操作系统、文件系统、Pelican的版本、文件创建、修改和删除都有关系）。任何外部站点链接到旧的文件位置都可能因此链接无效。因此，建议只在所有使用相同链接的文档位于同一个目录使用 <code>&#123;attach&#125;</code>。这样，同一个文件的输出位置就不会改变了。对于这种前提条件不存在情况，建议使用 <code>&#123;filename&#125;</code> 代替 <code>&#123;attach&#125;</code>，让 <code>STATIC_SAVE_AS</code> 和 <code>STATIC_URL</code> 来确定被链接文件的生成位置（单个文件的 <code>save_as</code> 和 <code>url</code> 可以在 <code>EXTRA_PATH_METADATA</code> 中设置）。</p>
+<h4 id="链接作者类别索引和标签">链接作者、类别、索引和标签</h4>
+<p>使用 <code>&#123;author&#125;name</code> <code>&#123;category&#125;foobar</code> <code>&#123;index&#125;</code> <code>&#123;tag&#125;tagname</code> 链接到作者、类别、索引和标签。</p>
+<h3 id="导入现有站点">导入现有站点</h3>
+<p>参考 <a target="_blank" rel="noopener" href="http://docs.getpelican.com/en/stable/importer.html#import">Importing an existing site</a> ，支持 WordPress,Tumblr, Dotclear, RSS.</p>
+<h3 id="多语言translations">多语言（Translations）</h3>
+<p>Pelican 支持多语言的文章。为了达到目的，你血药添加 <code>lang</code> 属性到文章(article)、页面(pages)的元信息，设置 <code>DEFAULT_LANG</code>（默认为en）。设置好后，默认语言的文章会被显示在列表中，其他翻译的版本会连同原文一起显示。 &gt; 注意：Pelican 不支持生成用于翻译子站点（比如：<code>example.com/de</code>）。参考<a target="_blank" rel="noopener" href="http://github.com/getpelican/pelican-plugins/tree/master/i18n_subsites">i18n_subsites plugin</a> 来使用这种高级功能。</p>
+<p>Pelican 使用 <code>slug</code> 来确定是否多篇文章之间具有翻译关系。用户可以在文章中手动设置<code>slug</code> 属性，否则 Pelican 根据文章标题自动生成<code>slug</code>。</p>
+<p>例如下面英语和法语的两篇文章： 英语版： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Foobar is not dead</span><br><span class="line">##################</span><br><span class="line"></span><br><span class="line">:slug: foobar-is-not-dead</span><br><span class="line">:lang: en</span><br><span class="line"></span><br><span class="line">That&#x27;s true, foobar is still alive!</span><br></pre></td></tr></table></figure> 法语版： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Foobar n&#x27;est pas mort !</span><br><span class="line">#######################</span><br><span class="line"></span><br><span class="line">:slug: foobar-is-not-dead</span><br><span class="line">:lang: fr</span><br><span class="line"></span><br><span class="line">Oui oui, foobar est toujours vivant !</span><br></pre></td></tr></table></figure></p>
+<p>尽管文章内容不同，但是它们两个仅有的共同点是 <code>slug</code>，功能是作为一个标识。如果你不想设置 <code>slug</code>，你就要保证它们的标题是完全一样，因为默认 <code>slug</code>是使用标题自动生成的。</p>
+<p>如果不希望使用自动检测来确定哪一个是原始版本哪一个是翻译版，你可以用 <code>translation</code> 属性在元信息中指定。 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Foobar is not dead</span><br><span class="line">##################</span><br><span class="line"></span><br><span class="line">:slug: foobar-is-not-dead</span><br><span class="line">:lang: en</span><br><span class="line">:translation: true</span><br><span class="line"></span><br><span class="line">That&#x27;s true, foobar is still alive!</span><br></pre></td></tr></table></figure> ### 语法高亮</p>
+<p>Pelican 提供代码块的彩色高亮显示。使用下面的转换就可以实现此功能。 （译注：下面的翻译省略掉RST的部分，仅保留MD部分。）</p>
+<p>Markdown中，Pelican 使用 <a target="_blank" rel="noopener" href="http://pythonhosted.org/Markdown/extensions/code_hilite.html#syntax">CodeHilite extension</a> 提供语法高亮功能，你需要在代码块上面使用语言标识，缩进语言标识和代码： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">There are two ways to specify the identifier:</span><br><span class="line"></span><br><span class="line">    :::python</span><br><span class="line">    print(&quot;The triple-colon syntax will *not* show line numbers.&quot;)</span><br><span class="line"></span><br><span class="line">To display line numbers, use a path-less shebang instead of colons:</span><br><span class="line"></span><br><span class="line">    #!python</span><br><span class="line">    print(&quot;The path-less shebang syntax *will* show line numbers.&quot;)</span><br></pre></td></tr></table></figure></p>
+<p>在<a target="_blank" rel="noopener" href="http://pygments.org/docs/lexers/">这里</a> 查看支持的语言标识。</p>
+<h3 id="发布草稿">发布草稿</h3>
+<p>如果希望把文章作为草稿发布（在正式发布前请朋友审阅），你可以在元信息中添加 <code>Status: draft</code> 属性。这样这篇文章会被输出到 <code>draft</code> 目录，不想是在索引和分类、标签页中。</p>
+<p>如果你的文章应该以草稿的方式自动发布出去（不是意外的发布未完成的文章），就在 <code>DEFAULT_METADATA</code> 设置中包含这个状态： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DEFAULT_METADATA = &#123;</span><br><span class="line">    &#x27;status&#x27;: &#x27;draft&#x27;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果想发布默认状态是 <code>draft</code> 的文章，设置文章的元信息 <code>Status: published</code> 即可。</p>
+<h2 id="发布网站">发布网站</h2>
+<h2 id="设置">设置</h2>
+<h2 id="创建主题">创建主题</h2>
+<h2 id="插件">插件</h2>
+<p>##　pelican-themesd</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Pelican/" rel="tag"># Pelican</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/Git/Git%20Submodules/" rel="next" title="Git Submodules 学习笔记">
+      Git Submodules 学习笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#pelican-%E5%85%A5%E9%97%A8"><span class="nav-number">1.</span> <span class="nav-text">Pelican 入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#pelican-%E5%AE%89%E8%A3%85"><span class="nav-number">1.1.</span> <span class="nav-text">Pelican 安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8pelican-quickstart%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E7%BD%91%E7%AB%99%E6%A1%86%E6%9E%B6"><span class="nav-number">1.2.</span> <span class="nav-text">使用pelican-quickstart快速生成网站框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E5%86%99%E5%86%85%E5%AE%B9"><span class="nav-number">1.3.</span> <span class="nav-text">编写内容</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E4%B8%8E%E9%A1%B5%E9%9D%A2"><span class="nav-number">1.3.1.</span> <span class="nav-text">文章与页面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B5%E9%9D%A2pages"><span class="nav-number">1.3.2.</span> <span class="nav-text">页面（Pages）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E9%83%A8%E8%B5%84%E6%BA%90%E9%93%BE%E6%8E%A5"><span class="nav-number">1.3.3.</span> <span class="nav-text">内部资源链接</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E9%93%BE%E6%8E%A5"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">静态文件链接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8%E5%90%8C%E4%B8%80%E4%B8%AA%E7%9B%AE%E5%BD%95%E4%B8%AD%E6%B7%B7%E5%90%88%E5%86%85%E5%AE%B9mixed-content-in-the-same-directory"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">在同一个目录中混合内容（Mixed content in the same directory）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%99%84%E4%BB%B6%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6attaching-static-files"><span class="nav-number">1.3.3.3.</span> <span class="nav-text">附件静态文件（Attaching static files）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%93%BE%E6%8E%A5%E4%BD%9C%E8%80%85%E7%B1%BB%E5%88%AB%E7%B4%A2%E5%BC%95%E5%92%8C%E6%A0%87%E7%AD%BE"><span class="nav-number">1.3.3.4.</span> <span class="nav-text">链接作者、类别、索引和标签</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%BC%E5%85%A5%E7%8E%B0%E6%9C%89%E7%AB%99%E7%82%B9"><span class="nav-number">1.3.4.</span> <span class="nav-text">导入现有站点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E8%AF%AD%E8%A8%80translations"><span class="nav-number">1.3.5.</span> <span class="nav-text">多语言（Translations）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%91%E5%B8%83%E8%8D%89%E7%A8%BF"><span class="nav-number">1.3.6.</span> <span class="nav-text">发布草稿</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%91%E5%B8%83%E7%BD%91%E7%AB%99"><span class="nav-number">1.4.</span> <span class="nav-text">发布网站</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.5.</span> <span class="nav-text">设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E4%B8%BB%E9%A2%98"><span class="nav-number">1.6.</span> <span class="nav-text">创建主题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E4%BB%B6"><span class="nav-number">1.7.</span> <span class="nav-text">插件</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhang Yuzheng</p>
+  <div class="site-description" itemprop="description">码农日常</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">[object Object]</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

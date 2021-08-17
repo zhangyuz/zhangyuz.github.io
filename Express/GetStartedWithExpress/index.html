@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.zhangyuzheng.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="原文参考 https:&#x2F;&#x2F;expressjs.com&#x2F;en&#x2F;guide&#x2F;routing.html 。  [TOC] Routing 路由（Routing） 路由就是特定URL与其对应的请求处理函数的映射，一个URL可以对应多个处理函数（译注：就是一个URL可以对应一个或多个回调函数，下文将处理函数都称为回调函数）。在同一个URL对应多个回调函数的情况下，回调函数的参数就不仅仅是 req 和 re">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Get Started with Express">
+<meta property="og:url" content="https://www.zhangyuzheng.com/Express/GetStartedWithExpress/index.html">
+<meta property="og:site_name" content="memorandums">
+<meta property="og:description" content="原文参考 https:&#x2F;&#x2F;expressjs.com&#x2F;en&#x2F;guide&#x2F;routing.html 。  [TOC] Routing 路由（Routing） 路由就是特定URL与其对应的请求处理函数的映射，一个URL可以对应多个处理函数（译注：就是一个URL可以对应一个或多个回调函数，下文将处理函数都称为回调函数）。在同一个URL对应多个回调函数的情况下，回调函数的参数就不仅仅是 req 和 re">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-11-03T11:15:00.000Z">
+<meta property="article:modified_time" content="2018-11-06T11:30:00.000Z">
+<meta property="article:author" content="Zhang Yuzheng">
+<meta property="article:tag" content="Express">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.zhangyuzheng.com/Express/GetStartedWithExpress/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>Get Started with Express | memorandums</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="memorandums" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">memorandums</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">life notes</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://www.zhangyuzheng.com/Express/GetStartedWithExpress/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhang Yuzheng">
+      <meta itemprop="description" content="码农日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="memorandums">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Get Started with Express
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-11-03 19:15:00" itemprop="dateCreated datePublished" datetime="2018-11-03T19:15:00+08:00">2018-11-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2018-11-06 19:30:00" itemprop="dateModified" datetime="2018-11-06T19:30:00+08:00">2018-11-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Express/" itemprop="url" rel="index"><span itemprop="name">Express</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>原文参考 <a target="_blank" rel="noopener" href="https://expressjs.com/en/guide/routing.html">https://expressjs.com/en/guide/routing.html</a> 。</p>
+</blockquote>
+<p>[TOC]</p>
+<h1 id="routing">Routing</h1>
+<h2 id="路由routing">路由（Routing）</h2>
+<p>路由就是特定URL与其对应的请求处理函数的映射，一个URL可以对应多个处理函数（译注：就是一个URL可以对应一个或多个回调函数，下文将处理函数都称为回调函数）。在同一个URL对应多个回调函数的情况下，回调函数的参数就不仅仅是 <code>req</code> 和 <code>res</code>，还要增加一个 <code>next</code>，在回调函数中要在最后主动调用 <code>next()</code> 将请求交给下一个回调函数处理，比如： <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>(<span class="string">&#x27;express&#x27;</span>);</span><br><span class="line">app = express();</span><br><span class="line">app.get(<span class="string">&#x27;/&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, req, next</span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;hello world&#x27;</span>);</span><br><span class="line">    next();</span><br><span class="line">&#125;, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">    res.send(<span class="string">&#x27;hello world&#x27;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h2 id="路由方式route-methods">路由方式（Route methods）</h2>
+<p>路由的方式来自于 HTTP 协议的请求方式，包括 GET、POST、PUT、DELETE、HEAD等，具体参考 <a target="_blank" rel="noopener" href="https://expressjs.com/en/4x/api.html#app.METHOD">app.METHOD</a>。 express 有个一特殊的路由方式 <code>all</code>， 他用来处理对某个URL的任意方式的请求（包括了所有的HTTP请求方式）。 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">app.all(<span class="string">&#x27;/secret&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req,res,next</span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;Accessing the secret session&#x27;</span>);</span><br><span class="line">    next();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h2 id="路由路径route-paths">路由路径（Route paths）</h2>
+<p>路径与请求方式排列组合确定了哪些路径可以响应哪些请求。路径可以是字符串、字符串模式和正则表达式。<code>?+*()</code>这几个符号按照正则表达式规则来解析，<code>-.</code> 按照字面意思来解析。如果在路径中使用<code>$</code>符号，必须使用<code>[]</code> 扩上它来进行转义，比如 '/data/$book' 要写成 <code>/data/[\$]book</code>。 &gt; express 使用 <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/path-to-regexp">path-to-regexp</a> 进行路径匹配，可以查阅他的文档来确定路径的定义。<a target="_blank" rel="noopener" href="http://forbeslindesay.github.io/express-route-tester/">Express Route Tester</a> 是一个非常好用的工具，用来测试 Express的基本路由。路径中的查询字符串不属于路径定义的范围。 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1) 字符串匹配</span></span><br><span class="line">app.get(<span class="string">&#x27;/&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</span><br><span class="line">    res.send(<span class="string">&#x27;root&#x27;</span>);</span><br><span class="line">&#125;);</span><br><span class="line">app.get(<span class="string">&#x27;/hello.text&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</span><br><span class="line">    res.send(<span class="string">&#x27;hello.text&#x27;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2) 字符串模式匹配</span></span><br><span class="line">app.get(<span class="string">&#x27;/ab?cd&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</span><br><span class="line">    <span class="comment">// acd, abcd</span></span><br><span class="line">    res.send(<span class="string">&#x27;ab?cd&#x27;</span>);</span><br><span class="line">&#125;);</span><br><span class="line">app.get(<span class="string">&#x27;/ab+cd&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req,res</span>)</span>&#123;</span><br><span class="line">    <span class="comment">// abcd, abbcd,abbbcd,......</span></span><br><span class="line">    res.send(<span class="string">&#x27;ab+cd&#x27;</span>);</span><br><span class="line">&#125;);</span><br><span class="line">app.get(<span class="string">&#x27;/ab*cd, fucntion(req, res)&#123;</span></span><br><span class="line"><span class="string">    // abcd, abxcd, abRANDOMcd,ab123cd,.....</span></span><br><span class="line"><span class="string">    res.send(&#x27;</span>ab*cd<span class="string">&#x27;);</span></span><br><span class="line"><span class="string">&#125;&#x27;</span>);</span><br><span class="line">app.get(<span class="string">&#x27;/ab(cd)?e&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</span><br><span class="line">    <span class="comment">// abe, abcde</span></span><br><span class="line">    res.send(<span class="string">&#x27;ab(cd)e&#x27;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// 正则表达式匹配</span></span><br><span class="line">app.get(<span class="regexp">/a/</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</span><br><span class="line">    <span class="comment">// 任意包含a的路径</span></span><br><span class="line">    res.send(<span class="string">&#x27;/a/&#x27;</span>);</span><br><span class="line">&#125;);</span><br><span class="line">app.get(<span class="regexp">/.*fly$/</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</span><br><span class="line">    <span class="comment">// butterfly, dragonfly, not butterflyman, dragonflyman</span></span><br><span class="line">    res.send(<span class="string">&#x27;/.*fly$/&#x27;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h2 id="路由参数route-parameters">路由参数（Route parameters）</h2>
+<p>即URL中的动态部分（译注：不是query string），保存在 <code>req.params</code> 中，名字就是路由中定义的参数名字，参数的名字只能包括ASCII字母和数字，a-zA-Z0-9； <code>-</code> 和 <code>.</code> 不作特别处理，按照字面原意处理；参数后可以用 <code>()</code> 包含正则表达式。 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// 字符串参数</span><br><span class="line">Route path: /users/:userId/books/:bookId</span><br><span class="line">Request URL: http://localhost:3000/users/34/books/8989</span><br><span class="line">req.params: &#123; &quot;userId&quot;: &quot;34&quot;, &quot;bookId&quot;: &quot;8989&quot; &#125;</span><br><span class="line">// - 与 . 不作特别解析</span><br><span class="line">Route path: /flights/:from-:to</span><br><span class="line">Request URL: http://localhost:3000/flights/LAX-SFO</span><br><span class="line">req.params: &#123; &quot;from&quot;: &quot;LAX&quot;, &quot;to&quot;: &quot;SFO&quot; &#125;</span><br><span class="line">Route path: /plantae/:genus.:species</span><br><span class="line">Request URL: http://localhost:3000/plantae/Prunus.persica</span><br><span class="line">req.params: &#123; &quot;genus&quot;: &quot;Prunus&quot;, &quot;species&quot;: &quot;persica&quot; &#125;</span><br><span class="line">// 参数中增加正则表达式</span><br><span class="line">Route path: /user/:userId(\d+)</span><br><span class="line">Request URL: http://localhost:3000/user/42</span><br><span class="line">req.params: &#123;&quot;userId&quot;: &quot;42&quot;&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="路由回调route-handler">路由回调（Route handler）</h2>
+<p>利用路由回调函数的 <code>next</code> 函数可以实现对某些请求的预处理，如果本回调不需要处理，可以直接调用 <code>next()</code>跳过当前回调。 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 最简单的回调</span></span><br><span class="line">app.get(<span class="string">&#x27;/example/a&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req,res</span>)</span>&#123;</span><br><span class="line">    res.send(<span class="string">&#x27;Hello from A&#x27;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// 多个回调处理同一个请求</span></span><br><span class="line">app.get(<span class="string">&#x27;/example/b&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;the response will be sent by next handler&#x27;</span>);</span><br><span class="line">&#125;, <span class="function"><span class="keyword">function</span>(<span class="params">req,res</span>)</span>&#123;</span><br><span class="line">    res.send(<span class="string">&#x27;Hello form B&#x27;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// 回调数组处理同一个请求</span></span><br><span class="line"><span class="keyword">var</span> cb0 = <span class="function"><span class="keyword">function</span>(<span class="params">req,res, next</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;CB0&#x27;</span>);</span><br><span class="line">    next();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> cb1= <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    consol.log(<span class="string">&#x27;CB1&#x27;</span>);</span><br><span class="line">    next();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> cb2 = <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    res.send(<span class="string">&#x27;Hello from C&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line">app.get(<span class="string">&#x27;/example/c&#x27;</span>, [cb0, cb1, cb2]);</span><br><span class="line"><span class="comment">// 回调数组与普通回调可以组合使用</span></span><br><span class="line"><span class="keyword">var</span> cb0 = <span class="function"><span class="keyword">function</span> (<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;CB0&#x27;</span>)</span><br><span class="line">    next()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> cb1 = <span class="function"><span class="keyword">function</span> (<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;CB1&#x27;</span>)</span><br><span class="line">    next()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">app.get(<span class="string">&#x27;/example/d&#x27;</span>, [cb0, cb1], <span class="function"><span class="keyword">function</span> (<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;the response will be sent by the next function ...&#x27;</span>)</span><br><span class="line">    next()</span><br><span class="line">&#125;, <span class="function"><span class="keyword">function</span> (<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">    res.send(<span class="string">&#x27;Hello from D!&#x27;</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<h2 id="响应方法response-methon">响应方法（Response methon）</h2>
+<p>下面表中的函数可以向客户端发送响应，并结束一次请求响应的过程，如果不调用一下函数，客户断的请求将不会终止。 方法支持 说明 res.download() 提示客户端下载文件 res.end() 结束响应流程 res.json() 发送JSON响应 res.jsonp() 发送支持JSONP的JSON响应 res.redirect() 重定向请求 res.render() 渲染视图模板响应请求 res.send() 发送多种类型的响应 res.sendFile() 将文件作为octet stream响应发出去 res.sendStatus() 发送状态码，并将状态码的字符表示作为响应体发送</p>
+<h2 id="app.route">app.route()</h2>
+<p>使用 <code>app.route()</code> 来链式创建路由回调，可以减少冗余代码和避免拼写错误。 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">app.route(<span class="string">&#x27;/book&#x27;</span>)</span><br><span class="line">    .get(<span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</span><br><span class="line">    res.send(<span class="string">&#x27;Get a random book&#x27;</span>);</span><br><span class="line">    &#125;)</span><br><span class="line">    .post(<span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</span><br><span class="line">        res.send(<span class="string">&#x27;Add a book&#x27;</span>);</span><br><span class="line">    &#125;)</span><br><span class="line">    .put(<span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">        res.send(<span class="string">&#x27;Update a book&#x27;</span>);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></p>
+<h2 id="express.router">express.Router()</h2>
+<p>使用 <code>express.Router</code> 类可以创建模块化、可加载的路由回调函数。<code>Router</code> 实例是是完整的中间件和路由系统，因此它也经常被称为 "mini-app" 。 创建名为 <code>birds.js</code> 的路由文件： <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">&#x27;express&#x27;</span>);</span><br><span class="line"><span class="keyword">var</span> router = express.Router();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义此路由的中间件</span></span><br><span class="line">router.use(<span class="function"><span class="keyword">function</span> <span class="title">timeLog</span>(<span class="params">req, res, next</span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;Time:&#x27;</span>, <span class="built_in">Date</span>.now());</span><br><span class="line">    next();</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// 定义根页面路由</span></span><br><span class="line">router.get(<span class="string">&#x27;/&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</span><br><span class="line">    res.send(<span class="string">&#x27;bird home page&#x27;</span>);</span><br><span class="line">&#125;);</span><br><span class="line">router.get(<span class="string">&#x27;/about&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req,res</span>)</span>&#123;</span><br><span class="line">    res.send(<span class="string">&#x27;About birds&#x27;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = router</span><br></pre></td></tr></table></figure> 在app中载入路由模块： <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> birds = <span class="built_in">require</span>(<span class="string">&#x27;./birds&#x27;</span>)</span><br><span class="line">app.use(<span class="string">&#x27;/birds&#x27;</span>, birds);</span><br></pre></td></tr></table></figure> 这样 app 就可以处理 <code>/birds</code> 和 <code>/birds/about</code> 的请求了。</p>
+<h1 id="writing-middleware-for-use-in-express-apps">Writing middleware for use in Express apps</h1>
+<h2 id="简介overview">简介（Overview）</h2>
+<p>中间件能够在一次请求响应循环中访问所有 req、res 和 next 。在中间件中调用 next 函数表示当前中间件执行成功。中间件可以： - 执行任意代码 - 改变请求 req和响应res 对象 - 结束请求-响应循环 - 调用下一个中间件 中间件执行完毕必须调用 next 函数，交给下一个中间件继续处理请求，如果不调用 next 函数，the request will be left hanging （译注：翻译不好这句话，自己体会吧）。</p>
+<p>中间件对应的请求方式，比如get、post、delete等 中间件需要处理的路径 中间件回调函数定义 下一个中间件的回调函数，按照传统，称为next 此中间件的HTTP响应参数，称为res 此中间件的HTTP请求参数，称为req</p>
+<h2 id="实例example">实例（Example）</h2>
+<p>本实例包括两个中间件，一个叫做 myLogger，打印一句简单的 log；另一个叫 requestTime，打印HTTP请求的时间戳。 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">&#x27;express&#x27;</span>);</span><br><span class="line"><span class="keyword">var</span> app = express();</span><br><span class="line"></span><br><span class="line">app.get(<span class="string">&#x27;/&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</span><br><span class="line">    res.send(<span class="string">&#x27;Hello world&#x27;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure></p>
+<h3 id="mylogger-中间件">myLogger 中间件</h3>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> myLogger =  <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;LOGGED&#x27;</span>);</span><br><span class="line">    <span class="comment">// 调用 next 函数将请求交给下一个中间件处理</span></span><br><span class="line">    next();</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="requesttime-中间件">requestTime 中间件</h3>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> requestTime = <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    req.requestTime = <span class="built_in">Date</span>.now();</span><br><span class="line">    next();</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">app.use(requestTime);</span><br><span class="line">app.get(<span class="string">&#x27;/&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">    res.send(<span class="string">`<span class="subst">$&#123;req.requestTime&#125;</span>`</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="可配置的中间件configurable-middleware">可配置的中间件（Configurable middleware）</h2>
+<p>在使用时，传递参数给中间件。 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> configurableMiddleware = <span class="function"><span class="keyword">function</span>(<span class="params">options</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// whatever you do with options here</span></span><br><span class="line">        next();</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure> 你也可以把中间件单独写在单独module中，通过 <code>module.exports</code> 供外界使用。 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// configurableMiddleware.js</span></span><br><span class="line"><span class="keyword">var</span> configurableMiddleware = <span class="function"><span class="keyword">function</span>(<span class="params">options</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// whatever you do with options here</span></span><br><span class="line">        next();</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = configurableMiddleware;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// app.js</span></span><br><span class="line">cmw = <span class="built_in">require</span>(<span class="string">&#x27;./configurableMiddleware&#x27;</span>);</span><br><span class="line">app.user(cmw(&#123;<span class="attr">option1</span>: <span class="string">&#x27;o1 value&#x27;</span>&#125;));</span><br></pre></td></tr></table></figure>
+<h1 id="使用中间件using-middleware">使用中间件（Using middleware）</h1>
+<p>Express 自身功能很少，是依赖路由和中间件的 web 框架：一个 Express App基本上就是一个路由和中间件的集合。 如果当前中间件不想结束当前处理的请求-响应过程，它必须调用 <code>next()</code>，将请求交给下一个中间件处理。 Express App可以使用以下4类中间件： - 应用级中间件 - 路由级中间件 - 错误处理中间件 - 内置中间件 - 三方中间件</p>
+<h2 id="应用级中间件application-level-middleware">应用级中间件（Application-level middleware）</h2>
+<p>使用 <code>app.user()</code> 和 <code>app.METHOND()</code> 来将中间件绑定到application中。 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">&#x27;express&#x27;</span>);</span><br><span class="line"><span class="keyword">var</span> app = express();</span><br><span class="line"><span class="comment">// 与路径无关的中间件（middleware with no mount point）</span></span><br><span class="line">app.user(<span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;middleware with no mount point&#x27;</span>);</span><br><span class="line">    next();</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// 与路径相关的中间件</span></span><br><span class="line"><span class="comment">// 这种多个中间件一起称为middleware sub-stack</span></span><br><span class="line">app.user(<span class="string">&#x27;/user/:id&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;user mounted middleware 0&#x27;</span>);</span><br><span class="line">    next();</span><br><span class="line">&#125;, <span class="function"><span class="title">fucntion</span>(<span class="params">req, res, next</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;user mounted middleware 1&#x27;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure> 调用 <code>next('route')</code> 跳过middleware stack中的剩余中间件（只对app.METHOD和router.METHOD两类方法载入的中间件生效）。</p>
+<h2 id="路由级中间件">路由级中间件</h2>
+<p>路由级中间件与应用级中间件没有区别，只是路由级的中间件绑定到 <code>express.Router()</code> 对象。使用 <code>router.user()</code> 和 <code>router.METHOD()</code> 来绑定路由级中间件。使用 <code>next('router')</code> 跳过当前middleware substack的剩余中间件。 &gt; 路由级中间件与应用级中间件使用方法一致，此处跳过实例代码。</p>
+<h2 id="错误处理中间件error-handling-middleware">错误处理中间件（Error-handling middleware）</h2>
+<blockquote>
+<p>错误处理中间件回调函数的参数是4个，必须提供4个参数的中间件回调函数来标识这是一个错误处理中间件。 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">express = <span class="built_in">require</span>(<span class="string">&#x27;express&#x27;</span>);</span><br><span class="line">app = express();</span><br><span class="line"><span class="comment">// 注意错误处理函数的形式（函数签名）：4个参数，第一个参数为error。</span></span><br><span class="line">app.user(<span class="function"><span class="keyword">function</span>(<span class="params">err, req, res, next</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.error(err.stack);</span><br><span class="line">    res.status(<span class="number">500</span>).send(<span class="string">&#x27;Somethind broken&#x27;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure> ## 内置中间件（Built-in middleware） Express 内置的中间件包括： - <code>express.static</code>：提供静态资源供访问。 - <code>express.json</code>：解析请求中包含的JSON数据。 - <code>express.urlencoded</code>：解析请求中URL-encoded 数据。</p>
+</blockquote>
+<h2 id="三方中间件third-party-middleware">三方中间件（Third-party middleware）</h2>
+<p>安装第三方中间件并载入到 Express 应用中。 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install cookie-parser</span><br></pre></td></tr></table></figure> <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var express = require(&#x27;express&#x27;);</span><br><span class="line">var cookieParser = require(&#x27;cookie-parser&#x27;);</span><br><span class="line">app = express();</span><br><span class="line">app.use(cookieParser());</span><br></pre></td></tr></table></figure></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Express/" rel="tag"># Express</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Hexo/hexo-enable-mathjax/" rel="prev" title="启用math支持">
+      <i class="fa fa-chevron-left"></i> 启用math支持
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/DailyNotes/MacOS%E5%AE%89%E8%A3%85JDK11/" rel="next" title="MacOS 安装 Jdk11,并在多 Jdk 间切换">
+      MacOS 安装 Jdk11,并在多 Jdk 间切换 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#routing"><span class="nav-number">1.</span> <span class="nav-text">Routing</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1routing"><span class="nav-number">1.1.</span> <span class="nav-text">路由（Routing）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E6%96%B9%E5%BC%8Froute-methods"><span class="nav-number">1.2.</span> <span class="nav-text">路由方式（Route methods）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E8%B7%AF%E5%BE%84route-paths"><span class="nav-number">1.3.</span> <span class="nav-text">路由路径（Route paths）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E5%8F%82%E6%95%B0route-parameters"><span class="nav-number">1.4.</span> <span class="nav-text">路由参数（Route parameters）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E5%9B%9E%E8%B0%83route-handler"><span class="nav-number">1.5.</span> <span class="nav-text">路由回调（Route handler）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%8D%E5%BA%94%E6%96%B9%E6%B3%95response-methon"><span class="nav-number">1.6.</span> <span class="nav-text">响应方法（Response methon）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#app.route"><span class="nav-number">1.7.</span> <span class="nav-text">app.route()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#express.router"><span class="nav-number">1.8.</span> <span class="nav-text">express.Router()</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#writing-middleware-for-use-in-express-apps"><span class="nav-number">2.</span> <span class="nav-text">Writing middleware for use in Express apps</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8Boverview"><span class="nav-number">2.1.</span> <span class="nav-text">简介（Overview）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8Bexample"><span class="nav-number">2.2.</span> <span class="nav-text">实例（Example）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mylogger-%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="nav-number">2.2.1.</span> <span class="nav-text">myLogger 中间件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#requesttime-%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="nav-number">2.2.2.</span> <span class="nav-text">requestTime 中间件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E9%85%8D%E7%BD%AE%E7%9A%84%E4%B8%AD%E9%97%B4%E4%BB%B6configurable-middleware"><span class="nav-number">2.3.</span> <span class="nav-text">可配置的中间件（Configurable middleware）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E4%B8%AD%E9%97%B4%E4%BB%B6using-middleware"><span class="nav-number">3.</span> <span class="nav-text">使用中间件（Using middleware）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E7%BA%A7%E4%B8%AD%E9%97%B4%E4%BB%B6application-level-middleware"><span class="nav-number">3.1.</span> <span class="nav-text">应用级中间件（Application-level middleware）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E7%BA%A7%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="nav-number">3.2.</span> <span class="nav-text">路由级中间件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E4%B8%AD%E9%97%B4%E4%BB%B6error-handling-middleware"><span class="nav-number">3.3.</span> <span class="nav-text">错误处理中间件（Error-handling middleware）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E6%96%B9%E4%B8%AD%E9%97%B4%E4%BB%B6third-party-middleware"><span class="nav-number">3.4.</span> <span class="nav-text">三方中间件（Third-party middleware）</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhang Yuzheng</p>
+  <div class="site-description" itemprop="description">码农日常</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">[object Object]</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
